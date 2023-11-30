@@ -1,0 +1,31 @@
+.App{
+	display: flex;
+	justify-content: center;
+	background-color: skyblue;
+	.logo{
+		margin-top: 300px;
+		text-align: center;
+		font-size: 32px;
+	}
+
+	.searchbar{
+		//上下边距
+		@paddingTopAndBottom: 10px;
+		//圆弧半径
+		@radius: @paddingTopAndBottom + 16px;
+		margin-top: 20px;
+		padding: @paddingTopAndBottom @radius @paddingTopAndBottom;
+		border: 1px solid rgba(223,225,229,0);
+		box-shadow: 0 1px 6px rgba(32,33,36,.28);
+		background-color: #fff;
+		border-radius: @radius;
+		width: 600px;
+		transition: .2s;
+
+		&:hover{
+			background-color: #ffffffc7;
+			box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 5px 3px;
+		}
+	}
+}
+
