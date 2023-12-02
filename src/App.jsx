@@ -1,18 +1,12 @@
-import { Input } from 'antd';
-import './App.less'
+import SearchIndex from './searchIndex/index'
+import './App.css'
+
 function App() {
 
   return (
     <>
 		<div className="App">
-			<div className="middle">
-				<div className="logo">
-					搜索界面
-				</div>
-				<div className='searchbar'>
-					<Input prefix="hhh" bordered={false} />
-				</div>
-			</div>
+			<SearchIndex/>
 		</div>
     </>
   )

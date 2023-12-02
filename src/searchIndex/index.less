@@ -1,0 +1,73 @@
+
+.middlebox{
+	display: flex;
+	justify-content: center;
+	
+	.header{
+		position: absolute;
+		right: 0;
+		top: 0;
+		padding: 10px;
+		font-size: 20px;
+		cursor: pointer;
+	}
+	
+	.logo{
+		margin-top: 30vh;
+		text-align: center;
+		font-size: 32px;
+	}
+	
+	.searchbar{
+		//上下边距
+		@paddingTopAndBottom: 10px;
+		//圆弧半径
+		@radius: @paddingTopAndBottom + 16px;
+		margin-top: 20px;
+		padding: @paddingTopAndBottom @radius @paddingTopAndBottom;
+		border: 1px solid rgba(223,225,229,0);
+		box-shadow: 0 1px 6px rgba(32,33,36,.28);
+		background-color: #fff;
+		border-radius: @radius;
+		width: 600px;
+		transition: .2s;
+	
+		&:hover{
+			background-color: #ffffffc7;
+			box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 5px 3px;
+		}
+	}
+	.relativeBox{
+		display: flex;
+		justify-content: center;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		margin: auto;
+		padding: 10px 0 10px;
+		@transitionTime:.5s;
+		.arrow{
+			transition: @transitionTime;
+			z-index: 1;
+		}
+		
+		.contentList{
+			position: relative;
+			width: 100px;
+			border: 1px solid black;
+			border-radius: 5px;
+			transform: translateX(100%);
+			transition: all @transitionTime cubic-bezier(0.075, 0.82, 0.165, 1);
+		}
+		
+		&.show{
+			.arrow{
+				transform: rotateY(180deg) translateX(-12px);
+			}
+			.contentList{
+				transform: translateX(0%);
+			}
+		}
+	}
+}
