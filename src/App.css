@@ -1,5 +1,6 @@
 .App{
 	background-color: skyblue;
 	min-height: 100vh;
+	overflow: hidden;
 }
 

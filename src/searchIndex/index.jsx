@@ -1,7 +1,8 @@
 import { Input } from 'antd';
-import { UserOutlined , CaretLeftFilled, CaretRightFilled } from '@ant-design/icons';
+import { UserOutlined } from '@ant-design/icons';
 import './index.less'
 import { useState } from 'react';
+import Aside from '../aside'
 function App() {
 	let [isshow,setIsshow]=useState(false);
 	function switchContentShow() {
@@ -21,12 +22,15 @@ function App() {
 						<Input style={{boxShadow:"none"}} prefix="hhh" bordered={false} />
 					</div>
 				</div>
-				<div className={isshow?"relativeBox show":"relativeBox"}>
-					<CaretLeftFilled className='arrow'onClick={switchContentShow}/>
-					<div className='contentList'>
-						aaaa
-					</div>
-				</div>
+				<Aside isshow={isshow} switchContentShow={switchContentShow}>
+					{
+						Array.from({length:11}).map((v,i)=>(
+							<div key={i} className='testlist'>
+								testlist1111<br/><br/><br/><br/><br/><br/><br/><br/>111111111111111111111111
+							</div>
+						)
+					)}
+				</Aside>
 			</div>
 		</>
 	)

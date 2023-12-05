@@ -1,4 +1,4 @@
-import SearchIndex from './searchIndex/index'
+import SearchIndex from './searchIndex'
 import './App.css'
 
 function App() {

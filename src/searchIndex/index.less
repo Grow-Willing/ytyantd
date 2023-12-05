@@ -37,37 +37,4 @@
 			box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 5px 3px;
 		}
 	}
-	.relativeBox{
-		display: flex;
-		justify-content: center;
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		right: 0;
-		margin: auto;
-		padding: 10px 0 10px;
-		@transitionTime:.5s;
-		.arrow{
-			transition: @transitionTime;
-			z-index: 1;
-		}
-		
-		.contentList{
-			position: relative;
-			width: 100px;
-			border: 1px solid black;
-			border-radius: 5px;
-			transform: translateX(100%);
-			transition: all @transitionTime cubic-bezier(0.075, 0.82, 0.165, 1);
-		}
-		
-		&.show{
-			.arrow{
-				transform: rotateY(180deg) translateX(-12px);
-			}
-			.contentList{
-				transform: translateX(0%);
-			}
-		}
-	}
 }
