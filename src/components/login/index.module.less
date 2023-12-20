@@ -1,0 +1,83 @@
+.blackContent {
+	position: relative;
+	height: 100vh;
+	min-height: 100vh;
+	min-width: 820px;
+	background-color: #1c3b67;
+	.whiteContent {
+		width: 50%;
+		height: 100%;
+		background-color: white;
+	}
+	.middle {
+		display: flex;
+		position: absolute;
+		top: 25%;
+		left: 0%;
+		right: 0%;
+		bottom: 25%;
+		width: 50vw;
+		min-width: 820px;
+		height: 400px;
+		margin: auto;
+		border-radius: 10px;
+		box-shadow: rgba(0, 0, 0, 0.15) 15px 15px 20px 20px;
+		.halfContent {
+			position: relative;
+			width: 50%;
+			.leftform {
+				position: absolute;
+				width: 370px;
+				left: 0;
+				right: 0;
+				margin: auto;
+				padding: 20px;
+				.inputContent {
+					//上下边距
+					@paddingTopAndBottom: 5px;
+					//圆弧半径
+					@radius: 2px;
+					padding: @paddingTopAndBottom @radius @paddingTopAndBottom;
+					border: 1px solid rgba(223, 225, 229, 0);
+					box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+					background-color: #fff;
+					border-radius: @radius;
+					transition: 0.2s;
+
+					&:hover,
+					&:focus-within {
+						background-color: #ffffffc7;
+						box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 5px 3px;
+					}
+				}
+			}
+			.rightform {
+				position: absolute;
+				width: 370px;
+				left: 0;
+				right: 0;
+				margin: auto;
+				padding: 20px;
+				color: #fff;
+				.inputContent {
+					//上下边距
+					@paddingTopAndBottom: 5px;
+					//圆弧半径
+					@radius: 2px;
+					padding: @paddingTopAndBottom @radius @paddingTopAndBottom;
+					border: 1px solid rgba(32, 30, 26, 0);
+					box-shadow: 0 1px 6px rgba(223, 222, 219, 0.28);
+					background-color: #ffffffef;
+					border-radius: @radius;
+					transition: 0.2s;
+
+					&:hover,
+					&:focus-within {
+						background-color: #fff;
+						box-shadow: rgba(255, 255, 255, 0.25) 0px 0px 5px 3px;
+					}
+				}
+			}
+		}
+	}
+}
