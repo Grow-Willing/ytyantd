@@ -2,16 +2,22 @@ import { Input, Drawer } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import styles from './index.module.less'
 import { useState } from 'react';
+import { useNavigate  } from "react-router-dom";
+
 function App() {
 	let [isshow, setIsshow] = useState(false);
+	const navigate = useNavigate();
 	function switchContentShow() {
 		setIsshow(!isshow);
+	}
+	function tologin() {
+		navigate('/login');
 	}
 	return (
 		<>
 			<div className={styles.app}>
 				<div className={styles.middlebox}>
-					<div className={styles.header} onClick={switchContentShow}>
+					<div className={styles.header} onClick={tologin}>
 						<UserOutlined />
 					</div>
 					<div className={styles.middle}>
