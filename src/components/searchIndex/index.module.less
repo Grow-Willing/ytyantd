@@ -8,11 +8,10 @@
 		
 		.header{
 			position: absolute;
-			right: 0;
+			width: 100%;
 			top: 0;
 			padding: 10px;
 			font-size: 20px;
-			cursor: pointer;
 		}
 		
 		.logo{
@@ -27,18 +26,53 @@
 			//圆弧半径
 			@radius: @paddingTopAndBottom + 16px;
 			margin-top: 20px;
-			padding: @paddingTopAndBottom @radius @paddingTopAndBottom;
+			padding: @paddingTopAndBottom 16px @paddingTopAndBottom;
 			border: 1px solid rgba(223,225,229,0);
 			box-shadow: 0 1px 6px rgba(32,33,36,.28);
 			background-color: #fff;
 			border-radius: @radius;
 			width: 600px;
 			transition: .2s;
-		
+			
+			.input{
+				box-shadow: none;
+				padding-left: 0;
+			}
+
 			&:hover{
 				background-color: #ffffffc7;
 				box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 5px 3px;
 			}
 		}
+	}
+}
+
+.icon{
+	cursor: pointer;
+	&:hover{
+		transition: .3s;
+		color: red;
+	}
+}
+.cell{
+	display: block;
+	@size:100px;
+	height: @size + 16px;
+	width: @size;
+	cursor: pointer;
+	transition: .2s;
+	text-decoration: none !important;
+	color: black!important;
+	.cellicon{
+		font-size: @size;
+	}
+	.celldescription{
+		text-align: center;
+	}
+	&:hover{
+		transform: scale(1.1);
+	}
+	&:active{
+		transform: scale(1.05);
 	}
 }

@@ -4,16 +4,21 @@ import {
 
 import SearchIndex from '../components/searchIndex'
 import Login from '../components/login'
+import ErrorPage from '../components/404'
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <SearchIndex/>,
+		errorElement: <ErrorPage/>,
 	},
 	{
 		path: "/login",
 		element: <Login/>,
-		errorElement: <div>not find</div>,
+	},
+	{
+		path: "/account",
+		element: <Login/>,
 	},
 ]);
 export default router;
