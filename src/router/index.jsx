@@ -2,9 +2,10 @@ import {
 	createBrowserRouter,
   } from "react-router-dom";
 
-import SearchIndex from '../components/searchIndex'
-import Login from '../components/login'
-import ErrorPage from '../components/404'
+import SearchIndex from '@/view/searchIndex'
+import Login from '@/view/login'
+import Upload from '@/view/upload'
+import ErrorPage from '@/view/404'
 
 const router = createBrowserRouter([
 	{
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
 	{
 		path: "/account",
 		element: <Login/>,
+	},
+	{
+		path: "/upload",
+		element: <Upload/>,
 	},
 ]);
 export default router;

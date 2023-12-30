@@ -78,6 +78,10 @@ function App() {
 								<MyIcon type="icon-search" className={styles.cellicon} />
 								<div className={styles.celldescription}>查询</div>
 							</Link>
+							<Link className={styles.cell} to="/upload">
+								<MyIcon type="icon-search" className={styles.cellicon} />
+								<div className={styles.celldescription}>上传</div>
+							</Link>
 						</Space>
 					</Drawer>
 				</div>

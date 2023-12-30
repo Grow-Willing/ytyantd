@@ -3,14 +3,16 @@ import styles from "./index.module.less";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate  } from "react-router-dom";
+import urlconfig from "@/url/index";
 function App() {
+	let {url:loginurl,method:loginmethod}=urlconfig.login;
 	const navigate = useNavigate();
 	let [username, updateUsername] = useState(""),
 		[password, updatePassword] = useState("");
 	let login = () => {
 		axios({
-			method: "POST",
-			url: "/api/login",
+			method: loginmethod,
+			url: loginurl,
 			data: { username: username, password: password },
 		}).then(function (response) {
 			let {code,data:{token},msg}= response.data;
