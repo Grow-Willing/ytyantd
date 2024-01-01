@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate  } from "react-router-dom";
 import urlconfig from "@/url/index";
+import Navlist from '@/component/navlist';
 function App() {
 	let {url:loginurl,method:loginmethod}=urlconfig.login;
 	const navigate = useNavigate();
@@ -136,6 +137,7 @@ function App() {
 						</Space>
 					</div>
 				</div>
+				<Navlist classname={styles.navlist}/>
 			</div>
 		</>
 	);

@@ -3,41 +3,68 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 export default function Index() {
 	let eyesRef = useRef(null);
-	useEffect(() => {
-		document.documentElement.style.height="100%";
-		document.body.style.height="100%";
-		document.body.style.background="#28254C";
-		var pageX =  window.screen.width;
-		var pageY =  window.screen.height;
-		var mouseY = 0;
-		var mouseX = 0;
-		function throttle(func, wait) {
-			let timeout;
-			return function() {
-				let context = this;
-				let args = arguments;
-				if (!timeout) {
-					timeout = setTimeout(() => {
-						timeout = null;
-						func.apply(context, args)
-					}, wait)
-				}
+	// useEffect(() => {
+	// 	var mouseY = 0;
+	// 	var mouseX = 0;
+	// 	function throttle(func, wait) {
+	// 		let timeout;
+	// 		return function() {
+	// 			let context = this;
+	// 			let args = arguments;
+	// 			if (!timeout) {
+	// 				timeout = setTimeout(() => {
+	// 					timeout = null;
+	// 					func.apply(context, args)
+	// 				}, wait)
+	// 			}
+	// 		}
+	// 	}
+	// 	let mousemoveFunc=function (event) {
+	// 		var pageX =  document.documentElement.clientWidth;
+	// 		var pageY =  document.documentElement.clientHeight;
+	// 		//verticalAxis
+	// 		mouseY = event.pageY;
+	// 		let yAxis = (pageY / 2 - mouseY) / pageY * 300;
+	// 		//horizontalAxis
+	// 		mouseX = event.pageX / -pageX;
+	// 		let xAxis = -mouseX * 100 - 100;
+	// 		console.log(mouseX,mouseY,xAxis,yAxis);
+	// 		eyesRef.current.style.transform='translate(' + xAxis + '%,' + (-yAxis) + '%)';
+	// 	};
+	// 	document.onmousemove=throttle(mousemoveFunc,10);
+	// 	return ()=>{
+	// 		document.onmousemove=null;
+	// 	}
+	// }, []);
+	var mouseY = 0;
+	var mouseX = 0;
+	function throttle(func, wait) {
+		let timeout;
+		return function() {
+			let context = this;
+			let args = arguments;
+			if (!timeout) {
+				timeout = setTimeout(() => {
+					timeout = null;
+					func.apply(context, args)
+				}, wait)
 			}
 		}
-		let mousemoveFunc=function (event) {
-			//verticalAxis
-			mouseY = event.pageY;
-			let yAxis = (pageY / 2 - mouseY) / pageY * 300;
-			//horizontalAxis
-			mouseX = event.pageX / -pageX;
-			let xAxis = -mouseX * 100 - 100;
-			console.log(mouseX,mouseY,xAxis,yAxis);
-			eyesRef.current.style.transform='translate(' + xAxis + '%,' + (-yAxis) + '%)';
-		};
-		document.onmousemove=throttle(mousemoveFunc,10);
-	}, []);
+	}
+	let mousemoveFunc=function (event) {
+		var pageX =  document.documentElement.clientWidth;
+		var pageY =  document.documentElement.clientHeight;
+		//verticalAxis
+		mouseY = event.pageY;
+		let yAxis = (pageY / 2 - mouseY) / pageY * 300;
+		//horizontalAxis
+		mouseX = event.pageX / -pageX;
+		let xAxis = -mouseX * 100 - 100;
+		console.log(mouseX,mouseY,xAxis,yAxis);
+		eyesRef.current.style.transform='translate(' + xAxis + '%,' + (-yAxis) + '%)';
+	};
 	return (
-		<div className={styles.body}>
+		<div className={styles.body} onMouseMove={throttle(mousemoveFunc,10)}>
 			<div className={styles.box}>
 				<div className={styles.box__ghost}>
 					<div className={styles.symbol}></div>

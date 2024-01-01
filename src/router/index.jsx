@@ -5,6 +5,7 @@ import {
 import SearchIndex from '@/view/searchIndex'
 import Login from '@/view/login'
 import Upload from '@/view/upload'
+import WorkSchedule from '@/view/workSchedule'
 import ErrorPage from '@/view/404'
 
 const router = createBrowserRouter([
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
 	{
 		path: "/upload",
 		element: <Upload/>,
+	},
+	{
+		path: "/workSchedule",
+		element: <WorkSchedule/>,
 	},
 ]);
 export default router;

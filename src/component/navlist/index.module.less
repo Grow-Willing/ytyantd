@@ -1,0 +1,22 @@
+.cell{
+	display: block;
+	@size:100px;
+	height: @size + 16px;
+	width: @size;
+	cursor: pointer;
+	transition: .2s;
+	text-decoration: none !important;
+	color: black!important;
+	.cellicon{
+		font-size: @size;
+	}
+	.celldescription{
+		text-align: center;
+	}
+	&:hover{
+		transform: scale(1.1);
+	}
+	&:active{
+		transform: scale(1.05);
+	}
+}
