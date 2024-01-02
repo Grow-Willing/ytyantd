@@ -1,7 +1,7 @@
 import styles from "./index.module.less";
-import { message, Button, Input } from 'antd';
+import { message, Button, Input, Row, Space } from 'antd';
 import axios from "axios";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import urlconfig from "@/url/index";
 import Navlist from '@/component/navlist';
@@ -11,8 +11,7 @@ function App() {
 	const [fileList, setFileList] = useState([]);
 	const [uploading, setUploading] = useState(false);
 
-	let { url, method } = urlconfig.upload;
-
+	let { url, method } = urlconfig.uploadfile;
 	let handleupload = () => {
 		if (!fileList.length) {
 			message
@@ -21,14 +20,59 @@ function App() {
 		fileList.forEach((file) => {
 			formdata.append(file.filename, file.file);
 		})
-		axios({
+
+		fileupload({url,method,file:fileList[0].file}).finally(() => {
+			setUploading(false);
+		});
+		setUploading(true);
+	}
+	let fileupload=({url,method,file,requestData={}})=>{
+		let batchsize=10*1024*1024;
+		let batchcounts=Math.ceil(file.size/batchsize);
+		return axios({
 			url,
 			method,
-			data: formdata,
+			data: {
+				batchcounts,
+				filesize:file.size,
+				...requestData
+			},
 			timeout: 5000
 		}).then(function (response) {
-			let { code, data: { token }, msg } = response.data;
-			message.success("请求成功", 3, null);
+			let { data: { uploadId,url } } = response.data;
+			message.success("上传链接获取成功", 3, null);
+			let sliceList=[];
+			url.forEach((value,index)=>{
+				let start=index*batchsize,
+					end=(index+1)*batchsize;
+				if(end>fileList[0].file.size){
+					end=fileList[0].file.size;
+				}
+				let senddata=fileList[0].file.slice(start,end);
+				let pice=axios({
+					url:value,
+					method:"put",
+					data:senddata,
+					timeout:5000,
+					headers: {
+						'Content-Type': 'application/octet-stream'
+					},
+				}).then(function (response) {
+					message.success(`分片${index+1}上传成功`, 3, null);
+					console.log(response.data);
+				});
+				sliceList.push(pice);
+			})
+			let { uploaddoneurl, uploaddonemethod } = urlconfig.uploaddone;
+			Promise.all(sliceList).then(()=>axios({
+				url:uploaddoneurl,
+				method:uploaddonemethod,
+				params:{
+					uploadId
+				}
+			})).then(function (response) {
+				message.success("文件上传成功", 3, null);
+			})
 		}).catch(function (error) {
 			if (error.response) {
 				// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
@@ -46,10 +90,7 @@ function App() {
 			}
 			console.log(error.config);
 			message.error("请求失败", 3, null);
-		}).finally(() => {
-			setUploading(false);
-		});
-		setUploading(true);
+		})
 	}
 	let handledrop = (e) => {
 		e.preventDefault();
@@ -61,6 +102,7 @@ function App() {
 					const file = item.getAsFile();
 					setFileList(oldArray => [...oldArray, { filename: file.name, file }])
 					console.log(`… file[${i}].name = ${file.name}`);
+					console.log(file.type);
 				}
 			});
 		} else {
@@ -74,16 +116,16 @@ function App() {
 	let handledragover = (e) => {
 		e.preventDefault();
 	}
-	let hanldevaluechange=(index,value) => {
-		let nextfileList=fileList.map((f, i) =>{
-			if(i==index){
-				for(let j=0; j<fileList.length; j++){
-					if(fileList[j].filename==value){//存在重名
+	let hanldevaluechange = (index, value) => {
+		let nextfileList = fileList.map((f, i) => {
+			if (i == index) {
+				for (let j = 0; j < fileList.length; j++) {
+					if (fileList[j].filename == value) {//存在重名
 						message.error("重名了");
 						return f;
 					}
 				}
-				return {filename: value,file:f.file};
+				return { filename: value, file: f.file };
 			}
 			return f;
 		})
@@ -91,26 +133,41 @@ function App() {
 	}
 	return (
 		<>
-			<div className={styles.blackContent}>
-				<div className={styles.middle} onDrop={handledrop} onDragOver={handledragover}>
-					<Button type="primary" onClick={handleupload} loading={uploading} disabled={!fileList.length||uploading}>
+			<Row
+				className={styles.Content}
+				justify="center"
+				align="middle"
+			>
+				<div
+					className={styles.middle}
+					onDrop={handledrop}
+					onDragOver={handledragover}
+				>
+					<Button className={styles.uploadbtn} type="primary" onClick={handleupload} loading={uploading} disabled={!fileList.length || uploading}>
 						上传
 					</Button>
-					{fileList.map((file, index) => {
-						return (
-							<Input
-								key={index}
-								value={file.filename}
-								style={{ boxShadow: "none" }}
-								prefix={`${index+1}.`}
-								bordered={false}
-								onChange={(e)=>{hanldevaluechange(index,e.target.value)}}
-							/>
-						)
-					})}
+					{
+						fileList.length ? (<Space>
+							{
+								fileList.map((file, index) => {
+									return (
+										<Input
+											key={index}
+											value={file.filename}
+											style={{ boxShadow: "none" }}
+											prefix={`${index + 1}.`}
+											bordered={false}
+											onChange={(e) => { hanldevaluechange(index, e.target.value) }}
+										/>
+									)
+								})
+							}
+						</Space>) : (
+							<div>111</div>
+						)}
 				</div>
-				<Navlist classname={styles.navlist}/>
-			</div>
+				<Navlist classname={styles.navlist} />
+			</Row>
 		</>
 	);
 }

@@ -7,8 +7,6 @@ import urlconfig from "@/url/index";
 import Navlist from '@/component/navlist';
 function App() {
 	const navigate = useNavigate();
-
-	let { url, method } = urlconfig.upload;
 	const options = [
 		{
 			label: '按次排班',

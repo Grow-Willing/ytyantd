@@ -8,8 +8,12 @@ export default {
 		url: '/api/register',
 		method:"post"
 	},
-	upload:{
+	uploadfile:{
 		url: '/api/uploadfile',
-		method:"post"
+		method:"get"
 	},
+	uploaddone:{
+		url:'/api/uploadfiledone',
+		method:"get"
+	}
 }
