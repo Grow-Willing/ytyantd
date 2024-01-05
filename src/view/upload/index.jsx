@@ -1,10 +1,16 @@
 import styles from "./index.module.less";
 import { message, Button, Input, Row, Space } from 'antd';
+import { createFromIconfontCN } from "@ant-design/icons";
 import axios from "axios";
 import { startTransition, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import urlconfig from "@/url/index";
 import Navlist from '@/component/navlist';
+import EditableText from './editableText'
+
+const MyIcon = createFromIconfontCN({
+	scriptUrl: "/iconfont.js",
+});
 function App() {
 	const navigate = useNavigate();
 	//{filename,file}
@@ -100,7 +106,7 @@ function App() {
 				// If dropped items aren't files, reject them
 				if (item.kind === "file") {
 					const file = item.getAsFile();
-					setFileList(oldArray => [...oldArray, { filename: file.name, file }])
+					setFileList(oldArray => [...oldArray, { filename: file.name, file,edit:false}])
 					console.log(`… file[${i}].name = ${file.name}`);
 					console.log(file.type);
 				}
@@ -108,7 +114,7 @@ function App() {
 		} else {
 			// Use DataTransfer interface to access the file(s)
 			[...e.dataTransfer.files].forEach((file, i) => {
-				setFileList(oldArray => [...oldArray, { filename: file.name, file }])
+				setFileList(oldArray => [...oldArray, { filename: file.name, file,edit:false }])
 				console.log(`… file[${i}].name = ${file.name}`);
 			});
 		}
@@ -120,12 +126,21 @@ function App() {
 		let nextfileList = fileList.map((f, i) => {
 			if (i == index) {
 				for (let j = 0; j < fileList.length; j++) {
-					if (fileList[j].filename == value) {//存在重名
+					if (fileList[j].filename == value&&i!=j) {//存在重名
 						message.error("重名了");
 						return f;
 					}
 				}
-				return { filename: value, file: f.file };
+				return {...f, filename: value, edit: false};
+			}
+			return f;
+		})
+		setFileList(nextfileList);
+	}
+	let startEdit=(index)=>{
+		let nextfileList = fileList.map((f, i) => {
+			if (i == index) {
+				return { ...f,edit: true };
 			}
 			return f;
 		})
@@ -146,25 +161,20 @@ function App() {
 					<Button className={styles.uploadbtn} type="primary" onClick={handleupload} loading={uploading} disabled={!fileList.length || uploading}>
 						上传
 					</Button>
+					<div>
 					{
-						fileList.length ? (<Space>
+						fileList.length ? (<Space direction="vertical">
 							{
 								fileList.map((file, index) => {
 									return (
-										<Input
-											key={index}
-											value={file.filename}
-											style={{ boxShadow: "none" }}
-											prefix={`${index + 1}.`}
-											bordered={false}
-											onChange={(e) => { hanldevaluechange(index, e.target.value) }}
-										/>
+										<EditableText key={index} text={file.filename}/>
 									)
 								})
 							}
 						</Space>) : (
 							<div>111</div>
 						)}
+					</div>
 				</div>
 				<Navlist classname={styles.navlist} />
 			</Row>
