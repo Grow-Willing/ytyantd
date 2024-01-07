@@ -1,4 +1,4 @@
-import { Input, Space, Checkbox, Button, Row } from "antd";
+import { Input, Space, Checkbox, Button, Row, message } from "antd";
 import styles from "./index.module.less";
 import { useState } from "react";
 import axios from "axios";
@@ -15,16 +15,18 @@ function App() {
 			method: loginmethod,
 			url: loginurl,
 			data: { username: username, password: password },
+			timeout:5000
 		}).then(function (response) {
 			let {code,data:{token},msg}= response.data;
 			axios.defaults.headers['Authorization']=token;
 			console.log(code,token,msg);
 			if(token){
-				navigate('/');
+				navigate(-1);
 			}
 		}).catch(function (error) {
 			if (error.response) {
 				// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
+				message.error("请求异常");
 				console.log(error.response.data);
 				console.log(error.response.status);
 				console.log(error.response.headers);
@@ -32,6 +34,7 @@ function App() {
 				// 请求已经成功发起，但没有收到响应
 				// `error.request` 在浏览器中是 XMLHttpRequest 的实例，
 				// 而在node.js中是 http.ClientRequest 的实例
+				message.error("网络不佳");
 				console.log(error.request);
 			} else {
 				// 发送请求时出了点问题
@@ -83,6 +86,7 @@ function App() {
 									onChange={(e) => {
 										updateUsername(e.target.value);
 									}}
+									onPressEnter={login}
 								/>
 							</div>
 							密码
@@ -93,6 +97,7 @@ function App() {
 									onChange={(e) => {
 										updatePassword(e.target.value);
 									}}
+									onPressEnter={login}
 								/>
 							</div>
 							<Row justify={"space-between"} align={"middle"}>

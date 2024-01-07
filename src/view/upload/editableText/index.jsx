@@ -8,14 +8,19 @@ const MyIcon = createFromIconfontCN({
 	scriptUrl: "/iconfont.js",
 });
 
-export default function Index({text="",onBlur=()=>{}}) {
+export default function Index({text="",onChange=()=>{},addicons=[]}) {
 	const [editText, setEditText] = useState(text);
 	const [editing, setEditing] = useState(false);
 	const inputRef = useRef(null);
-	let blurhandler=(e)=>{
-		setEditText(e.target.value);
+	let changehandler=(e)=>{
+		let newvalue=e.target.value,
+			lastvalue=editText;
+		if(newvalue!=lastvalue){//changed
+			let result=onChange(newvalue);
+			if(result!==false)
+				setEditText(newvalue);
+		}
 		changeEditing();
-		onBlur.call(this, e.target.value);
 	}
 	let changeEditing=()=>{
 		setEditing(!editing);
@@ -27,6 +32,9 @@ export default function Index({text="",onBlur=()=>{}}) {
 			});
 		}
 	});
+	useEffect(() => {
+		setEditText(text);
+	},[text]);
 	return (
 		<div className={styles.editable}>
 			{
@@ -37,32 +45,30 @@ export default function Index({text="",onBlur=()=>{}}) {
 						className={styles.editText}
 						// style={{ boxShadow: "none" }}
 						bordered={false}
-						onBlur={blurhandler}
+						onBlur={changehandler}
+						onPressEnter={changehandler}
 					/>
 				):(<>
 					<span className={styles.editText}>
 						{editText}
 					</span>
-					<Space align="center">
+					<Space align="center" className={styles.iconlist}>
 						<Tooltip title="编辑" color="#108ee9">
 							<MyIcon
 								type="icon-edit"
-								className={styles.icon}
 								onClick={changeEditing}
 							/>
 						</Tooltip>
-						<Tooltip title="删除" color="#108ee9">
-							<MyIcon
-								type="icon-delete"
-								className={styles.icon}
-							/>
-						</Tooltip>
-						<Tooltip title="打标签" color="#108ee9">
-							<MyIcon
-								type="icon-add-tag"
-								className={styles.icon}
-							/>
-						</Tooltip>
+						{
+							addicons.map(({title,node},index)=>{
+								return (
+									<Tooltip key={index} title={title} color="#108ee9">
+										{node}
+									</Tooltip>
+								)
+								
+							})
+						}
 					</Space>
 				</>)
 			}

@@ -10,10 +10,10 @@ export default {
 	},
 	uploadfile:{
 		url: '/api/uploadfile',
-		method:"get"
+		method:"post"
 	},
 	uploaddone:{
-		url:'/api/uploadfiledone',
+		url:'/api/uploadfile',
 		method:"get"
 	}
 }
