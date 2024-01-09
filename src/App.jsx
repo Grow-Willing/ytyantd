@@ -7,13 +7,16 @@ import {
 import axios from 'axios'
 import router from '@/router'
 import urlConfig from '@/url'
+import { LoginProvider } from '@/context/loginContext'
 
-axios.defaults.baseURL=urlConfig.baseurl;
+axios.defaults.baseURL = urlConfig.baseurl;
 function App() {
 
 	return (
 		<>
-			<RouterProvider router={router} />
+			<LoginProvider>
+				<RouterProvider router={router} />
+			</LoginProvider>
 		</>
 	)
 }

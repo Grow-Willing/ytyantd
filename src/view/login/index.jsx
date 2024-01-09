@@ -5,24 +5,24 @@ import axios from "axios";
 import { useNavigate  } from "react-router-dom";
 import urlconfig from "@/url/index";
 import Navlist from '@/component/navlist';
+import {useLoginDispatch} from '@/context/loginContext';
 function App() {
 	let {url:loginurl,method:loginmethod}=urlconfig.login;
 	const navigate = useNavigate();
 	let [username, updateUsername] = useState(""),
-		[password, updatePassword] = useState("");
+		[password, updatePassword] = useState(""),
+		loginDispatch = useLoginDispatch();
 	let login = () => {
 		axios({
 			method: loginmethod,
 			url: loginurl,
 			data: { username: username, password: password },
-			timeout:5000
+			timeout:3000
 		}).then(function (response) {
 			let {code,data:{token},msg}= response.data;
-			axios.defaults.headers['Authorization']=token;
 			console.log(code,token,msg);
-			if(token){
-				navigate(-1);
-			}
+			loginDispatch({type:'login',token});
+			navigate(-1);
 		}).catch(function (error) {
 			if (error.response) {
 				// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围

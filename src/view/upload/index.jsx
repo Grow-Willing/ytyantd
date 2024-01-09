@@ -1,19 +1,18 @@
 import styles from "./index.module.less";
-import { message, Button, Tooltip, Row, Space, Modal } from 'antd';
+import { message, Button, Row, Space, Modal, FloatButton } from 'antd';
 import { createFromIconfontCN } from "@ant-design/icons";
 import axios from "axios";
-import { startTransition, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import urlconfig from "@/url/index";
 import Navlist from '@/component/navlist';
-import EditableText from './editableText'
+import EditableText from '@/component/editableText'
 import SparkMD5 from 'spark-md5';
 
 const MyIcon = createFromIconfontCN({
 	scriptUrl: "/iconfont.js",
 });
 function App() {
-	const navigate = useNavigate();
 	//{filename,file}
 	const [fileList, setFileList] = useState([]);
 	//是否正在上传
@@ -138,6 +137,7 @@ function App() {
 
 	//拖拽事件
 	let handledrop = (e) => {
+		e.currentTarget.classList.remove(styles.draghover);
 		e.preventDefault();
 		if (e.dataTransfer.items) {
 			// Use DataTransferItemList interface to access the file(s)
@@ -154,13 +154,44 @@ function App() {
 			// Use DataTransfer interface to access the file(s)
 			[...e.dataTransfer.files].forEach((file, i) => {
 				setFileList(oldArray => [...oldArray, { filename: file.name, file }])
+				console.log(file.webkitRelativePath)
 				console.log(`… file[${i}].name = ${file.name}`);
 			});
 		}
 	}
 	let handledragover = (e) => {
+		e.currentTarget.classList.add(styles.draghover);
 		e.preventDefault();
 	}
+	let handledragLeave = (e) => {
+		if (e.relatedTarget && e.relatedTarget !== e.currentTarget) {
+			if (e.relatedTarget.contains(e.currentTarget)) {//移出边界
+				e.currentTarget.classList.remove(styles.draghover);
+			}
+		} else {//移出页面
+			e.currentTarget.classList.remove(styles.draghover);
+		}
+		e.stopPropagation();
+	}
+
+	//点击上传文件
+	let handleClickupload = (isdir) => {
+		let fileinput = document.createElement("input");
+		fileinput.type = "file";
+		fileinput.multiple = true;
+		if(isdir)
+			fileinput.webkitdirectory=true;
+		fileinput.onchange = (e) => {
+			console.log(e.target.files);
+			for (let i = 0; i < e.target.files.length; i++) {
+				let file = e.target.files[i];
+				setFileList(oldArray => [...oldArray, { filename: file.name, file }])
+				console.log(`… file[${i}].name = ${file.name}`);
+			}
+		};
+		fileinput.click();
+	}
+
 
 	//edtiableText按钮
 	let hanldevaluechange = (index, value) => {
@@ -208,13 +239,55 @@ function App() {
 					className={styles.middle}
 					onDrop={handledrop}
 					onDragOver={handledragover}
+					onDragLeave={handledragLeave}
 				>
-					<Button className={styles.uploadbtn} type="primary" onClick={handleupload} loading={uploading} disabled={!fileList.length || uploading}>
-						上传
-					</Button>
-					<div>
-						{
-							fileList.length ? (<Space direction="vertical" size="0">
+					<FloatButton.Group
+						trigger="hover"
+						icon={
+							<MyIcon
+								type="icon-add"
+							/>
+						}
+					>
+						<FloatButton
+							type="primary"
+							tooltip={<div>选择文件</div>}
+							onClick={handleClickupload.bind(this, false)}
+							icon={
+								<MyIcon
+									type="icon-file"
+								/>
+							}
+						/>
+						<FloatButton
+							type="primary"
+							tooltip={<div>选择文件夹</div>}
+							onClick={handleClickupload.bind(this, true)}
+							icon={
+								<MyIcon
+									type="icon-folder"
+								/>
+							}
+						/>
+					</FloatButton.Group>
+					{
+						fileList.length ? (<>
+							<FloatButton
+								type="default"
+								tooltip={<div>开始上传</div>}
+								onClick={handleupload}
+								icon={
+									<MyIcon
+										type="icon-upload"
+									/>
+								}
+								style={{
+									top: "0px",
+									bottom:"0px",
+									margin:"auto"
+								}}
+							/>
+							<Space direction="vertical" size="0">
 								{
 									fileList.map((file, index) => {
 										return (
@@ -241,15 +314,33 @@ function App() {
 										)
 									})
 								}
-							</Space>) : (
-								<div>111</div>
-							)}
-						<Modal title="添加标签" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-							<p>Some contents...</p>
-							<p>Some contents...</p>
-							<p>Some contents...</p>
-						</Modal>
-					</div>
+							</Space>
+						</>) : (
+							<Row
+								justify="center"
+								align="middle"
+								className={styles.uploadContent}
+								onClick={handleClickupload.bind(this, false)}
+							>
+								<Space direction="vertical">
+									<Row justify="center">
+										<MyIcon type="icon-add" className={styles.uploadIcon} />
+									</Row>
+									<Row justify="center">
+										选择右下角按钮或拖拽以上传
+									</Row>
+									<Row justify="center">
+										Support for a single or bulk upload. Strictly prohibited from uploading company data or other
+										banned files.
+									</Row>
+								</Space>
+							</Row>
+						)}
+					<Modal title="添加标签" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+						<p>Some contents...</p>
+						<p>Some contents...</p>
+						<p>Some contents...</p>
+					</Modal>
 				</div>
 				<Navlist classname={styles.navlist} />
 			</Row>

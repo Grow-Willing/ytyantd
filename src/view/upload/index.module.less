@@ -7,10 +7,23 @@
 		width: 80vw;
 		min-width: 820px;
 		height: 80vh;
+		border: 1px dashed #d9d9d9;
 		border-radius: 10px;
-		box-shadow: rgba(0, 0, 0, 0.15) 15px 15px 20px 20px;
-		.edit{
-			color: skyblue;
+		box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 15px 5px;
+		transition: border-color .2s;
+		overflow: auto;
+		.uploadContent{
+			user-select: none;
+			height: 100%;
+			color: #d9d9d9;
+			cursor: pointer;
+			transition: .2s;
+		}
+		&.draghover,&:hover{
+			border-color: #4096ff;
+			.uploadContent{
+				color: skyblue;
+			}
 		}
 	}
 	.navlist{

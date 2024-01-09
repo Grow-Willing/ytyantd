@@ -1,4 +1,4 @@
-import {  Drawer, Space} from "antd";
+import {  Drawer, Space,FloatButton} from "antd";
 import { createFromIconfontCN } from "@ant-design/icons";
 import styles from "./index.module.less";
 import { useState } from "react";
@@ -15,11 +15,27 @@ function App({show=false,classname=""}) {
 	}
 	return (
 		<>
-			<MyIcon
+		
+			<FloatButton
+				type="default"
+				onClick={switchContentShow}
+				icon={
+					<MyIcon
+						type="icon-icon_fenlei-02"
+					/>
+				}
+				className={`${classname}`}
+				style={{
+					top: "0px",
+					bottom:"0px",
+					margin:"auto"
+				}}
+			/>
+			{/* <MyIcon
 				type="icon-icon_fenlei-02"
 				className={`${styles.icon} ${classname}`}
 				onClick={switchContentShow}
-			/>
+			/> */}
 			<Drawer
 				open={isshow}
 				onClose={switchContentShow}
