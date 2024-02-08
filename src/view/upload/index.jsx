@@ -179,8 +179,8 @@ function App() {
 		let fileinput = document.createElement("input");
 		fileinput.type = "file";
 		fileinput.multiple = true;
-		if(isdir)
-			fileinput.webkitdirectory=true;
+		if (isdir)
+			fileinput.webkitdirectory = true;
 		fileinput.onchange = (e) => {
 			console.log(e.target.files);
 			for (let i = 0; i < e.target.files.length; i++) {
@@ -282,12 +282,16 @@ function App() {
 									/>
 								}
 								style={{
-									top: "0px",
-									bottom:"0px",
-									margin:"auto"
+									right: 94
 								}}
 							/>
-							<Space direction="vertical" size="0">
+							<Space
+								direction="vertical"
+								size="0"
+								style={{
+									width: "100%"
+								}}
+							>
 								{
 									fileList.map((file, index) => {
 										return (
