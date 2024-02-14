@@ -12,9 +12,9 @@ function App({dataIndex,record,children,onChange,...restProps}) {
 	):(children);
 	return (
 		<>
-			<td {...restProps}>
+			{/* <td {...restProps}> */}
 				{childNode}
-			</td>
+			{/* </td> */}
 		</>
 	);
 }

@@ -5,6 +5,9 @@ const LoginContext = createContext(null);
 const LoginDispatchContext = createContext(null);
 import axios from "axios";
 
+
+const initialloginstate = {};
+
 export function LoginProvider({ children }) {
 	const [login, dispatch] = useReducer(
 		loginReducer,
@@ -47,5 +50,3 @@ function loginReducer(lastlogin, action) {
 		}
 	}
 }
-
-const initialloginstate = {};

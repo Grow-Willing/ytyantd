@@ -1,93 +1,144 @@
-import styles from "./index.module.less";
-import { Space, Table } from 'antd';
+import { Button, Space, Table, Tooltip } from 'antd';
 import { useEffect, useState } from "react";
 import EditableCell from './editablecell'
+import { PlusOutlined,DeleteOutlined,ImportOutlined,createFromIconfontCN} from "@ant-design/icons";
+import {useWorkShedule,useWorkSheduleDispatch} from '@/context/workSheduleContext';
 
+const MyIcon = createFromIconfontCN({
+	scriptUrl: "/iconfont.js",
+});
 
-function App() {
+function App({tableName}) {
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const onSelectChange = (newSelectedRowKeys) => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
 		setSelectedRowKeys(newSelectedRowKeys);
 	};
-	const defaultColumns = [
-		{
-			title: '姓名',
-			dataIndex: 'name',
-			width:"30%"
-		},
-		{
-			title: '资质',
-			dataIndex: 'qualification',
-		},
-	];
-	let [newColumns, setNewColumns] = useState([...defaultColumns,{
-		title: '操作',
-		key: 'action',
-		width:20,
-		render: (text, record, index) => (
-			<Space size="middle">
-				<a onClick={handleDelete.bind(this,index)}>Delete</a>
-			</Space>
-		),
-	}]);
-	const [data, setData] = useState([{key:0,name:"员工1",qualification:0}]);
-	const handleAdd = () => {
+	let workSchedule=useWorkShedule();
+	let {data,columns,key}=workSchedule[tableName];
+	let WorkSheduleDispatch=useWorkSheduleDispatch();
+	let setData=(v)=>{WorkSheduleDispatch({type: 'setData',tableName,data:v})};
+	let setKey=(v)=>{WorkSheduleDispatch({type: 'setKey',tableName,key:v})};
+	let handleAdd = () => {
 		const newData = {
-			key: data.length,
-			name: `Edward King ${data.length}`,
+			key,
+			equalGroup:0
 		};
 		setData([...data, newData]);
+		setKey(key+1);
 	};
 	let handleDelete = (key) => {
-		const newData = data.filter((item) => item.key !== key);
-		setData(newData);
+		setData((data)=>data.filter((item) => item.key !== key));
 	};
 	let handleSave = (row,k,v) => {
-		let newData = data.map((d, i) => {
+		setData((data) => data.map((d, i) => {
 			if (i == row) {
 				let nextvalue={ ...d};
 				nextvalue[k]=v;
 				return nextvalue;
 			}
 			return d;
-		})
-		setData(newData);
+		}));
 	};
-	let columns=newColumns.map((col) => {
-		return {
+
+	let newColumns=columns.map((col) => {
+		let ret={
 			...col,
-			onCell: (record) => ({
-				record,
-				dataIndex: col.dataIndex,
-				title: col.title,
-				onChange:handleSave
-			}),
+			width:`${100/columns.length}%`,
+			// onCell: (record) => ({
+			// 	record,
+			// 	dataIndex: col.dataIndex,
+			// 	title: col.title,
+			// 	onChange:handleSave
+			// }),
 		};
+		if(col.type==="dependency"){
+			let dependency=workSchedule.dependency[col.dataIndex];
+			ret.render=(text, record, index)=>{
+				if(typeof text === "number"){
+					return <div>{dependency[text]}</div>;
+				}
+				return <div>1</div>
+			}
+		}else{
+			ret.render=(text,record)=>
+				<EditableCell
+					record={record}
+					dataIndex={col.dataIndex}
+					title={col.title}
+					onChange={handleSave}
+				/>;
+		}
+		return ret;
 	});
 	const rowSelection = {
 		selectedRowKeys,
 		onChange: onSelectChange,
-		selections: [
-			{
-				key: 'addNewRow',
-				text: '添加新行',
-				onSelect: handleAdd,
-			},
-		],
+		columnWidth:"32px",
+		preserveSelectedRowKeys:false
+	}
+	//点击上传文件
+	let handleClickupload = () => {
+		let fileinput = document.createElement("input");
+		fileinput.type = "file";
+		fileinput.onchange = (e) => {
+			console.log(e.target.files);
+			for (let i = 0; i < e.target.files.length; i++) {
+				let file = e.target.files[i];
+				console.log(`… file[${i}].name = ${file.name}`);
+			}
+		};
+		fileinput.click();
 	}
 	return (
 		<>
+			<Space.Compact block>
+				<Tooltip placement="top" title="添加新行">
+					<Button
+						icon={<PlusOutlined />}
+						onClick={handleAdd}
+					/>
+				</Tooltip>
+				<Tooltip placement="top" title="删除选中">
+					<Button
+						icon={<DeleteOutlined />}
+						disabled={!selectedRowKeys.length}
+						onClick={()=>{
+							selectedRowKeys.forEach((v)=>{
+								handleDelete(v);
+							})
+							setSelectedRowKeys([]);
+						}}
+					/>
+				</Tooltip>
+				<Tooltip placement="top" title="从文件导入">
+					<Button
+						icon={<ImportOutlined />}
+						onClick={handleClickupload}
+					/>
+				</Tooltip>
+				<Tooltip placement="top" title="生成班表">
+					<Button
+						icon={<MyIcon type="icon-paibanguanli" />}
+						onClick={()=>{
+
+						}}
+					/>
+				</Tooltip>
+			</Space.Compact>
 			<Table
-				components={{
-					body: {
-						cell: EditableCell,
-					},
-				}}
+				// components={{
+				// 	body: {
+				// 		cell: EditableCell,
+				// 	},
+				// }}
 				rowSelection={rowSelection}
-				columns={columns}
+				columns={newColumns}
 				dataSource={data}
 				bordered={true}
+				onChange={(pagination, filters, sorter)=>{
+					console.log(pagination, filters, sorter)
+				}}
 			/>
 		</>
 	);
