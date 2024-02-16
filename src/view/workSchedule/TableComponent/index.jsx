@@ -1,6 +1,7 @@
-import { Button, Space, Table, Tooltip } from 'antd';
+import { Button, Select, Space, Table, Tooltip,InputNumber, Modal } from 'antd';
 import { useEffect, useState } from "react";
 import EditableCell from './editablecell'
+import CellModel from './cellModel'
 import { PlusOutlined,DeleteOutlined,ImportOutlined,createFromIconfontCN} from "@ant-design/icons";
 import {useWorkShedule,useWorkSheduleDispatch} from '@/context/workSheduleContext';
 
@@ -9,6 +10,15 @@ const MyIcon = createFromIconfontCN({
 });
 
 function App({tableName}) {
+	const [isModelOpen, setIsModelOpen] = useState(false);
+	const [modelData, setModelData] = useState({});
+	let toggleModel=()=>{
+		setIsModelOpen(!isModelOpen);
+	}
+	let openModel=(modelData)=>{
+		setModelData(modelData);
+		toggleModel();
+	}
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const onSelectChange = (newSelectedRowKeys) => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -22,8 +32,10 @@ function App({tableName}) {
 	let handleAdd = () => {
 		const newData = {
 			key,
-			equalGroup:0
 		};
+		columns.forEach(element => {
+			newData[element.dataIndex]=element.default
+		});
 		setData([...data, newData]);
 		setKey(key+1);
 	};
@@ -52,13 +64,65 @@ function App({tableName}) {
 			// 	onChange:handleSave
 			// }),
 		};
-		if(col.type==="dependency"){
-			let dependency=workSchedule.dependency[col.dataIndex];
+		if(col.type){
+			ret.title=()=>(
+				<Tooltip placement="top" title={`编辑${col.title}`}>
+					<Button
+						type="link"
+						onClick={openModel.bind(this,col)}
+					>
+						{col.title}
+					</Button>
+				</Tooltip>
+			)
 			ret.render=(text, record, index)=>{
-				if(typeof text === "number"){
-					return <div>{dependency[text]}</div>;
+				switch (col.type) {
+					case "select":{
+						let dependency=workSchedule.dependency[col.dataIndex];
+						dependency??=[];
+						return (<Select
+							placeholder={`请选择${col.title}`}
+							options={dependency.map((v,i)=>{
+								return {value:i,label:v}
+							})}
+							value={text<dependency.length?text:null}
+							onChange={(value)=>{handleSave(record.key,col.dataIndex,value)}}
+						>
+						</Select>);
+					}
+					case "list":{
+						let dependency=workSchedule.dependency[col.dataIndex];
+						dependency??=[];
+						return (<Select
+							allowClear
+							placeholder={`请选择${col.title}`}
+							mode="multiple"
+							style={{width: '100%',}}
+							filterOption={(inputValue, option)=>(option?.label ?? '').toLowerCase().includes(inputValue.toLowerCase())}
+							options={dependency.map((v,i)=>{
+								return {value:i,label:v}
+							})}
+							value={text.filter((v)=>v<dependency.length)}
+							onChange={(value)=>{handleSave(record.key,col.dataIndex,value)}}
+						>
+						</Select>);
+					}
+					case "number":{
+						return <InputNumber
+							min={col.min??0}
+							max={col.max}
+							value={text}
+							onChange={(value)=>{
+								if(value??false)handleSave(record.key,col.dataIndex,value);
+							}}
+							changeOnWheel
+						/>;
+					}
+					default:{
+						let dependency=workSchedule.dependency[col.dataIndex];
+						return <div>{JSON.stringify(dependency)}</div>
+					}
 				}
-				return <div>1</div>
 			}
 		}else{
 			ret.render=(text,record)=>
@@ -87,6 +151,7 @@ function App({tableName}) {
 				let file = e.target.files[i];
 				console.log(`… file[${i}].name = ${file.name}`);
 			}
+			console.log(workSchedule);
 		};
 		fileinput.click();
 	}
@@ -140,6 +205,7 @@ function App({tableName}) {
 					console.log(pagination, filters, sorter)
 				}}
 			/>
+			<CellModel data={modelData} open={isModelOpen} onOk={toggleModel} onCancel={toggleModel}/>
 		</>
 	);
 }

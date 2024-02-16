@@ -11,16 +11,19 @@ const initialWorkShedulestate = {
 			{
 				title: '姓名',
 				dataIndex: 'name',
+				default:"新员工",
 			},
 			{
 				title: '资质',
 				dataIndex: 'qualification',
-				type:"dependency",
+				type:"list",
+				default:[],
 			},
 			{
 				title:"等价组",
 				dataIndex:"equalGroup", 
-				type:"dependency",
+				type:"select",
+				default:null,
 			},
 		],
 		key:0,
@@ -31,22 +34,31 @@ const initialWorkShedulestate = {
 			{
 				title: '班名称',
 				dataIndex: 'shiftname',
+				default:"新班",
 			},
 			{
 				title: '上班人数',
 				dataIndex: 'count',
+				type:"number",
+				default:1,
 			},
 			{
 				title: '班时长',
 				dataIndex: 'length',
+				type:"number",
+				default:1,
 			},
 			{
 				title: '最短连续天数',
 				dataIndex: 'minlength',
+				type:"number",
+				default:1,
 			},
 			{
 				title: '最大连续天数',
 				dataIndex: 'maxlength',
+				type:"number",
+				default:4,
 			},
 		],
 		key:0,
@@ -71,6 +83,11 @@ const initialWorkShedulestate = {
 			"第一小队",
 			"第二小队",
 			"第三小队",
+		],
+		qualification:[
+			"CCNA",
+			"CCNP",
+			"CCIE"
 		]
 	}
 };
