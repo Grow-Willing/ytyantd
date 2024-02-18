@@ -65,16 +65,24 @@ function App({tableName}) {
 			// }),
 		};
 		if(col.type){
-			ret.title=()=>(
-				<Tooltip placement="top" title={`编辑${col.title}`}>
-					<Button
-						type="link"
-						onClick={openModel.bind(this,col)}
-					>
-						{col.title}
-					</Button>
-				</Tooltip>
-			)
+			switch (col.type) {
+				case "list":
+				case "select":{
+					ret.title=()=>(
+						<Tooltip placement="top" title={`编辑${col.title}`}>
+							<Button
+								type="link"
+								onClick={openModel.bind(this,col)}
+							>
+								{col.title}
+							</Button>
+						</Tooltip>
+					)
+					break;
+				}
+				default:
+					break;
+			}
 			ret.render=(text, record, index)=>{
 				switch (col.type) {
 					case "select":{
@@ -205,7 +213,7 @@ function App({tableName}) {
 					console.log(pagination, filters, sorter)
 				}}
 			/>
-			<CellModel data={modelData} open={isModelOpen} onOk={toggleModel} onCancel={toggleModel}/>
+			<CellModel data={modelData} key={JSON.stringify(modelData)} open={isModelOpen} onOk={toggleModel} onCancel={openModel.bind(this,{})}/>
 		</>
 	);
 }

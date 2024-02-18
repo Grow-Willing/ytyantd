@@ -152,6 +152,20 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 			}
 			return lastWorkShedule;
 		}
+		case 'setDependency':{
+			if(action.key&&Object.keys(lastWorkShedule.dependency).includes(action.key)){
+				let newstate={...lastWorkShedule};
+				if(Array.isArray(newstate.dependency[action.key])){
+					if(typeof action.index === 'number'){
+						newstate.dependency[action.key][action.index]=action.value;
+					}else{
+						newstate.dependency[action.key]=action.value;
+					}
+				}
+				return newstate;
+			}
+			return lastWorkShedule;
+		}
 		default: {
 			throw Error('Unknown action: ' + action.type);
 		}

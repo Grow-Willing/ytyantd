@@ -39,13 +39,13 @@ function App({show=false,classname=""}) {
 			<Drawer
 				open={isshow}
 				onClose={switchContentShow}
-				contentWrapperStyle={{
-					"--borderRadius": "15px",
-					height: "300px",
-					margin: "auto 10px auto auto",
-					borderRadius: "var(--borderRadius)",
-				}}
 				styles={{
+					wrapper:{
+						"--borderRadius": "15px",
+						height: "300px",
+						margin: "auto 10px auto auto",
+						borderRadius: "var(--borderRadius)",
+					},
 					content: {
 						borderRadius: "var(--borderRadius)",
 					},

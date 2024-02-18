@@ -8,7 +8,7 @@ const MyIcon = createFromIconfontCN({
 	scriptUrl: "/iconfont.js",
 });
 
-export default function Index({text="",onChange=()=>{},addicons=[]}) {
+export default function Index({text="",iconplacement="right",onChange=()=>{},addicons=[]}) {
 	const [editText, setEditText] = useState(text);
 	const [editing, setEditing] = useState(false);
 	const inputRef = useRef(null);
@@ -44,14 +44,16 @@ export default function Index({text="",onChange=()=>{},addicons=[]}) {
 						defaultValue={editText}
 						className={styles.editText}
 						// style={{ boxShadow: "none" }}
-						bordered={false}
+						variant="borderless"
 						onBlur={changehandler}
 						onPressEnter={changehandler}
 					/>
 				):(<>
-					<span className={styles.editText}>
-						{editText}
-					</span>
+					{iconplacement==="right"&&(
+						<span className={styles.editText}>
+							{editText}
+						</span>
+					)}
 					<Space align="center" className={styles.iconlist}>
 						<Tooltip title="编辑" color="#108ee9">
 							<MyIcon
@@ -70,6 +72,11 @@ export default function Index({text="",onChange=()=>{},addicons=[]}) {
 							})
 						}
 					</Space>
+					{iconplacement==="left"&&(
+						<span className={styles.editText}>
+							{editText}
+						</span>
+					)}
 				</>)
 			}
 		</div>
