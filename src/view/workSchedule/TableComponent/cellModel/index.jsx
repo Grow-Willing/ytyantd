@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 function App({data,onOk,...resprops}) {
 	let workSchedule=useWorkShedule();
 	let WorkSheduleDispatch=useWorkSheduleDispatch();
-	let dependency=workSchedule.dependency[data.dataIndex];
+	let dependency=workSchedule.dependency[data.dataIndex]?.value;
 	dependency??=[];
 	let [list,setList]=useState(dependency);
 	let getchildenode=()=>{

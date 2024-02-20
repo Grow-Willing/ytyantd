@@ -12,12 +12,9 @@ const MyIcon = createFromIconfontCN({
 function App({tableName}) {
 	const [isModelOpen, setIsModelOpen] = useState(false);
 	const [modelData, setModelData] = useState({});
-	let toggleModel=()=>{
-		setIsModelOpen(!isModelOpen);
-	}
-	let openModel=(modelData)=>{
+	let toggleModel=(modelData)=>{
 		setModelData(modelData);
-		toggleModel();
+		setIsModelOpen(!isModelOpen);
 	}
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const onSelectChange = (newSelectedRowKeys) => {
@@ -64,15 +61,22 @@ function App({tableName}) {
 			// 	onChange:handleSave
 			// }),
 		};
+		if (col.description) {
+			ret.title=()=>(
+				<Tooltip placement="top" title={col.description}>
+					{col.title}
+				</Tooltip>
+			)
+		}
 		if(col.type){
 			switch (col.type) {
 				case "list":
 				case "select":{
 					ret.title=()=>(
-						<Tooltip placement="top" title={`编辑${col.title}`}>
+						<Tooltip placement="top" title={col.description??`编辑${col.title}`}>
 							<Button
 								type="link"
-								onClick={openModel.bind(this,col)}
+								onClick={toggleModel.bind(this,col)}
 							>
 								{col.title}
 							</Button>
@@ -86,7 +90,7 @@ function App({tableName}) {
 			ret.render=(text, record, index)=>{
 				switch (col.type) {
 					case "select":{
-						let dependency=workSchedule.dependency[col.dataIndex];
+						let dependency=workSchedule.dependency[col.dataIndex].value;
 						dependency??=[];
 						return (<Select
 							placeholder={`请选择${col.title}`}
@@ -94,12 +98,12 @@ function App({tableName}) {
 								return {value:i,label:v}
 							})}
 							value={text<dependency.length?text:null}
-							onChange={(value)=>{handleSave(record.key,col.dataIndex,value)}}
+							onChange={(value)=>{handleSave(index,col.dataIndex,value)}}
 						>
 						</Select>);
 					}
 					case "list":{
-						let dependency=workSchedule.dependency[col.dataIndex];
+						let dependency=workSchedule.dependency[col.dataIndex].value;
 						dependency??=[];
 						return (<Select
 							allowClear
@@ -111,7 +115,7 @@ function App({tableName}) {
 								return {value:i,label:v}
 							})}
 							value={text.filter((v)=>v<dependency.length)}
-							onChange={(value)=>{handleSave(record.key,col.dataIndex,value)}}
+							onChange={(value)=>{handleSave(index,col.dataIndex,value)}}
 						>
 						</Select>);
 					}
@@ -121,13 +125,13 @@ function App({tableName}) {
 							max={col.max}
 							value={text}
 							onChange={(value)=>{
-								if(value??false)handleSave(record.key,col.dataIndex,value);
+								if(value??false)handleSave(index,col.dataIndex,value);
 							}}
 							changeOnWheel
 						/>;
 					}
 					default:{
-						let dependency=workSchedule.dependency[col.dataIndex];
+						let dependency=workSchedule.dependency[col.dataIndex].value;
 						return <div>{JSON.stringify(dependency)}</div>
 					}
 				}
@@ -213,7 +217,7 @@ function App({tableName}) {
 					console.log(pagination, filters, sorter)
 				}}
 			/>
-			<CellModel data={modelData} key={JSON.stringify(modelData)} open={isModelOpen} onOk={toggleModel} onCancel={openModel.bind(this,{})}/>
+			<CellModel data={modelData} key={JSON.stringify(modelData)} open={isModelOpen} onOk={toggleModel.bind(this,{})} onCancel={toggleModel.bind(this,{})}/>
 		</>
 	);
 }

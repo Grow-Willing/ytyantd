@@ -4,9 +4,13 @@ import React from 'react';
 import { Calendar } from 'antd';
 import classNames from 'classnames';
 import { Lunar, HolidayUtil } from 'lunar-javascript';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 function App() {
 	//日历功能
 	const [selectDate, setSelectDate] = React.useState(dayjs());
+	const [rangetime, setRangetime] = React.useState([dayjs(),dayjs()]);
+	const [isMouseDown, setIsMouseDown] = React.useState(false);
 	let cellRender = (date, info) => {
 		const d = Lunar.fromDate(date.toDate());
 		const lunar = d.getDayInChinese();
@@ -19,9 +23,30 @@ function App() {
 				className: classNames(styles.dateCell, {
 					[styles.current]: selectDate.isSame(date, 'date'),
 					[styles.today]: date.isSame(dayjs(), 'date'),
+					[styles.selected]: date.isBetween(rangetime[0], rangetime[1],null,"[]"),
 				}),
 				children: (
-					<div className={styles.text}>
+					<div className={styles.text}
+						onMouseDown={()=>{
+							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							console.log("down",time);
+							setRangetime([time,rangetime[1]]);
+							setIsMouseDown(true);
+						}}
+						onMouseEnter={()=>{
+							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							console.log("enter",time);
+							if (isMouseDown) {
+								setRangetime([rangetime[0],time]);
+							}
+						}}
+						onMouseUp={()=>{
+							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							console.log("up",time);
+							setRangetime([rangetime[0],time]);
+							setIsMouseDown(false);
+						}}
+					>
 						{date.get('date')}
 						{info.type === 'date' && (
 							<div className={styles.lunar}>{displayHoliday || solarTerm || lunar}</div>

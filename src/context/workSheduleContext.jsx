@@ -24,6 +24,7 @@ const initialWorkShedulestate = {
 				dataIndex:"equalGroup", 
 				type:"select",
 				default:null,
+				description:"同组的成员班表顺序一样，但可能会错开在不同天；不同组互不影响"
 			},
 		],
 		key:0,
@@ -47,6 +48,7 @@ const initialWorkShedulestate = {
 				dataIndex: 'length',
 				type:"number",
 				default:1,
+				description:"此班所算工时"
 			},
 			{
 				title: '最短连续天数',
@@ -79,16 +81,22 @@ const initialWorkShedulestate = {
 		data:[]
 	},
 	dependency:{
-		equalGroup:[
-			"第一小队",
-			"第二小队",
-			"第三小队",
-		],
-		qualification:[
-			"CCNA",
-			"CCNP",
-			"CCIE"
-		]
+		equalGroup:{
+			used:"people",
+			value:[
+				"第一小队",
+				"第二小队",
+				"第三小队",
+			]
+		},
+		qualification:{
+			used:"people",
+			value:[
+				"CCNA",
+				"CCNP",
+				"CCIE"
+			]
+		}
 	}
 };
 export function WorkSheduleProvider({ children }) {
@@ -155,11 +163,16 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 		case 'setDependency':{
 			if(action.key&&Object.keys(lastWorkShedule.dependency).includes(action.key)){
 				let newstate={...lastWorkShedule};
-				if(Array.isArray(newstate.dependency[action.key])){
+				if(Array.isArray(newstate.dependency[action.key].value)){
 					if(typeof action.index === 'number'){
-						newstate.dependency[action.key][action.index]=action.value;
+						newstate.dependency[action.key].value[action.index]=action.value;
 					}else{
-						newstate.dependency[action.key]=action.value;
+						newstate.dependency[action.key].value=action.value;
+						newstate[newstate.dependency[action.key].used].data=newstate[newstate.dependency[action.key].used].data.map(v=>{
+							let newret={...v};
+							newret[action.key]=[];
+							return newret;
+						})
 					}
 				}
 				return newstate;
