@@ -21,27 +21,26 @@ function App() {
 			return React.cloneElement(info.originNode, {
 				...info.originNode.props,
 				className: classNames(styles.dateCell, {
-					[styles.current]: selectDate.isSame(date, 'date'),
 					[styles.today]: date.isSame(dayjs(), 'date'),
-					[styles.selected]: date.isBetween(rangetime[0], rangetime[1],null,"[]"),
+					[styles.selected]: date.isBetween(rangetime[0], rangetime[1],"day","[]"),
 				}),
 				children: (
 					<div className={styles.text}
 						onMouseDown={()=>{
-							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							let time=date.format();
 							console.log("down",time);
-							setRangetime([time,rangetime[1]]);
+							setRangetime([time,time]);
 							setIsMouseDown(true);
 						}}
 						onMouseEnter={()=>{
-							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							let time=date.format();
 							console.log("enter",time);
 							if (isMouseDown) {
 								setRangetime([rangetime[0],time]);
 							}
 						}}
 						onMouseUp={()=>{
-							let time=`${date.get('year')}-${date.get('month')+1}-${date.get('date')}`
+							let time=date.format();
 							console.log("up",time);
 							setRangetime([rangetime[0],time]);
 							setIsMouseDown(false);
