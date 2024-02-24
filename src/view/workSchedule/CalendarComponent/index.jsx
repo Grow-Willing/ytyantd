@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import styles from "./index.module.less";
 import React from 'react';
-import { Calendar } from 'antd';
+import { Calendar, Menu } from 'antd';
+import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { Lunar, HolidayUtil } from 'lunar-javascript';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -9,6 +10,7 @@ dayjs.extend(isBetween);
 function App() {
 	//日历功能
 	const [selectDate, setSelectDate] = React.useState(dayjs());
+	const [contextmenu, setContextmenu] = React.useState();
 	const [rangetime, setRangetime] = React.useState([dayjs(),dayjs()]);
 	const [isMouseDown, setIsMouseDown] = React.useState(false);
 	let cellRender = (date, info) => {
@@ -44,6 +46,17 @@ function App() {
 							console.log("up",time);
 							setRangetime([rangetime[0],time]);
 							setIsMouseDown(false);
+						}}
+						onContextMenu={(e)=>{
+							let menudata={
+								mouse:{
+									clientX:e.clientX,
+									clientY:e.clientY,
+								},
+								date
+							}
+							setContextmenu(menudata);
+							e.preventDefault();
 						}}
 					>
 						{date.get('date')}
@@ -83,6 +96,38 @@ function App() {
 				borderRadius: "8px"
 			}}>
 				<Calendar fullCellRender={cellRender} fullscreen={false} onSelect={onDateChange} />
+				<Menu
+					hidden={!contextmenu}
+					onClick={({ key, keyPath })=>{
+						console.log({  key, keyPath });
+					}}
+					onBlur={()=>{
+						setContextmenu(null);
+					}}
+					style={{
+						position:"fixed",
+						zIndex:1,
+						width:"200px",
+						left:contextmenu?.mouse?.clientX??0,
+						top:contextmenu?.mouse?.clientY??0,
+						boxShadow:"rgba(0, 0, 0, 0.15) 0px 2px 15px 5px",
+						borderRadius:"5px"
+					}}
+					selectable={false}
+					mode="vertical"
+					items={[
+						{
+							label: "设定为开始日期",
+							key: 'startDay',
+							icon: <MailOutlined />,
+						},
+						{
+							label: "设定结束日期",
+							key: 'endDay',
+							icon: <MailOutlined />,
+						}
+					]}
+				/>
 			</div>
 		</>
 	);
