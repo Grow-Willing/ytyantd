@@ -1,9 +1,11 @@
-import { Button, Select, Space, Table, Tooltip,InputNumber, Modal } from 'antd';
+import { Button, Select, Space, Table, Tooltip,InputNumber, Modal, Slider } from 'antd';
 import { useEffect, useState } from "react";
 import EditableCell from './editablecell'
 import CellModel from './cellModel'
 import { PlusOutlined,DeleteOutlined,ImportOutlined,createFromIconfontCN} from "@ant-design/icons";
 import {useWorkShedule,useWorkSheduleDispatch} from '@/context/workSheduleContext';
+import axios from 'axios';
+import urlconfig from "@/url/index";
 
 const MyIcon = createFromIconfontCN({
 	scriptUrl: "/iconfont.js",
@@ -130,6 +132,17 @@ function App({tableName}) {
 							changeOnWheel
 						/>;
 					}
+					case "range":{
+						return <Slider
+							range
+							min={col.min??0}
+							max={col.max}
+							value={text}
+							onChange={(value)=>{
+								if(value??false)handleSave(index,col.dataIndex,value);
+							}}
+						/>;
+					}
 					default:{
 						let dependency=workSchedule.dependency[col.dataIndex].value;
 						return <div>{JSON.stringify(dependency)}</div>
@@ -198,7 +211,47 @@ function App({tableName}) {
 					<Button
 						icon={<MyIcon type="icon-paibanguanli" />}
 						onClick={()=>{
-
+							let {url:scheduleurl,method:schedulemethod}=urlconfig.getschedule;
+							let requestData={
+								person_list:workSchedule["people"].data,
+								input_shift_list:workSchedule["shifts"].data,
+								// offday_config:workSchedule["offdays"].data,
+								offday_config:{
+									"maxlength":8,
+									"minlength":2
+								},
+								equalGroup_list:workSchedule["dependency"].equalGroup.value,
+								qualification:workSchedule["dependency"].qualification.value,
+								num_shift_daily:1,
+								input_num_days:8
+							};
+							axios({
+								method: schedulemethod,
+								url: scheduleurl,
+								data: requestData,
+								timeout:3000
+							}).then(function (response) {
+								// let {code,data:{token},msg}= response.data;
+								console.log(response.data);
+							}).catch(function (error) {
+								if (error.response) {
+									// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
+									message.error("请求异常");
+									console.log(error.response.data);
+									console.log(error.response.status);
+									console.log(error.response.headers);
+								} else if (error.request) {
+									// 请求已经成功发起，但没有收到响应
+									// `error.request` 在浏览器中是 XMLHttpRequest 的实例，
+									// 而在node.js中是 http.ClientRequest 的实例
+									message.error("网络不佳");
+									console.log(error.request);
+								} else {
+									// 发送请求时出了点问题
+									console.log('Error', error.message);
+								}
+								console.log(error.config);
+							});
 						}}
 					/>
 				</Tooltip>

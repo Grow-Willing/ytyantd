@@ -15,5 +15,9 @@ export default {
 	uploaddone:{
 		url:'/api/uploadfile',
 		method:"get"
-	}
+	},
+	getschedule:{
+		url: '/api/schedule',
+		method:"post"
+	},
 }

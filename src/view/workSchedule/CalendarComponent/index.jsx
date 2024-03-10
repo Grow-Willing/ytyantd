@@ -3,6 +3,7 @@ import styles from "./index.module.less";
 import React from 'react';
 import { Calendar, Menu } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
+import {useContextMenuStatus} from '@/hook/useContextMenuStatus'
 import classNames from 'classnames';
 import { Lunar, HolidayUtil } from 'lunar-javascript';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -13,6 +14,7 @@ function App() {
 	const [contextmenu, setContextmenu] = React.useState();
 	const [rangetime, setRangetime] = React.useState([dayjs(),dayjs()]);
 	const [isMouseDown, setIsMouseDown] = React.useState(false);
+	let isContextMenuOpen=useContextMenuStatus(()=>{setContextmenu(null)});
 	let cellRender = (date, info) => {
 		const d = Lunar.fromDate(date.toDate());
 		const lunar = d.getDayInChinese();
@@ -28,11 +30,13 @@ function App() {
 				}),
 				children: (
 					<div className={styles.text}
-						onMouseDown={()=>{
-							let time=date.format();
-							console.log("down",time);
-							setRangetime([time,time]);
-							setIsMouseDown(true);
+						onMouseDown={(e)=>{
+							if(e.button == 0&&!isMouseDown){
+								let time=date.format();
+								console.log("down",time);
+								setRangetime([time,time]);
+								setIsMouseDown(true);
+							}
 						}}
 						onMouseEnter={()=>{
 							let time=date.format();
@@ -44,7 +48,9 @@ function App() {
 						onMouseUp={()=>{
 							let time=date.format();
 							console.log("up",time);
-							setRangetime([rangetime[0],time]);
+							if (isMouseDown) {
+								setRangetime([rangetime[0],time]);
+							}
 							setIsMouseDown(false);
 						}}
 						onContextMenu={(e)=>{
@@ -97,9 +103,32 @@ function App() {
 			}}>
 				<Calendar fullCellRender={cellRender} fullscreen={false} onSelect={onDateChange} />
 				<Menu
-					hidden={!contextmenu}
-					onClick={({ key, keyPath })=>{
-						console.log({  key, keyPath });
+					hidden={!contextmenu||!isContextMenuOpen}
+					onClick={({ key, keyPath,domEvent:e })=>{
+						console.log({  key, keyPath,e },contextmenu.date);
+						switch (key) {
+							case "startSetStartDay":{
+								let time=contextmenu.date.format();
+								setRangetime([time,time]);
+								setIsMouseDown(true);
+								break;
+							}
+							case "startDay":{
+								let time=contextmenu.date.format();
+								setRangetime([time,rangetime[1]]);
+								break;
+							}
+							case "endDay":{
+								let time=contextmenu.date.format();
+								setRangetime([rangetime[0],time]);
+								setIsMouseDown(false);
+								break;
+							}
+							default:
+								break;
+						}
+						e.stopPropagation();
+						setContextmenu(null);
 					}}
 					onBlur={()=>{
 						setContextmenu(null);
@@ -117,12 +146,17 @@ function App() {
 					mode="vertical"
 					items={[
 						{
+							label: "从这里开始选择",
+							key: 'startSetStartDay',
+							icon: <MailOutlined />,
+						},
+						{
 							label: "设定为开始日期",
 							key: 'startDay',
 							icon: <MailOutlined />,
 						},
 						{
-							label: "设定结束日期",
+							label: "设定为结束日期",
 							key: 'endDay',
 							icon: <MailOutlined />,
 						}

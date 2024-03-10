@@ -34,14 +34,17 @@ const initialWorkShedulestate = {
 		columns:[
 			{
 				title: '班名称',
-				dataIndex: 'shiftname',
+				dataIndex: 'name',
 				default:"新班",
 			},
 			{
 				title: '上班人数',
-				dataIndex: 'count',
-				type:"number",
-				default:1,
+				dataIndex: 'peopleNeedCount',
+				type:"range",
+				default:[1,1],
+				get max(){
+					return initialWorkShedulestate.people.data.length;
+				}
 			},
 			{
 				title: '班时长',
@@ -51,10 +54,16 @@ const initialWorkShedulestate = {
 				description:"此班所算工时"
 			},
 			{
+				title: '所需上班天数',
+				dataIndex: 'bancount',
+				type:"number",
+				default:1,
+			},
+			{
 				title: '最短连续天数',
 				dataIndex: 'minlength',
 				type:"number",
-				default:1,
+				default:0,
 			},
 			{
 				title: '最大连续天数',
