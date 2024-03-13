@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CalendarComponent from "./CalendarComponent";
 import TableComponent from "./TableComponent";
+import DateComponent from "./dateComponent";
 import RelativeSetting from "./relativeSetting";
 import Navlist from '@/component/navlist';
 import {WorkSheduleProvider,useWorkShedule} from '@/context/workSheduleContext'
@@ -19,15 +20,11 @@ function App() {
 			value: 'shifts',
 		},
 		{
-			label: '需求设置',
+			label: '日期和需求',
 			value: 'require',
 		},
 		{
-			label: '休息日设置',
-			value: 'offdays',
-		},
-		{
-			label: '关联设置',
+			label: '相关设置',
 			value: 'relative',
 		},
 	];
@@ -44,10 +41,13 @@ function App() {
 					</div>
 					{value==="people"&&<TableComponent tableName="people"/>}
 					{value==="shifts"&&<TableComponent tableName="shifts"/>}
-					{/* {value==="require"&&<TableComponent tableName="require"/>} */}
-					{value==="offdays"&&<TableComponent tableName="offdays"/>}
-					{value==="relative"&&<RelativeSetting tableName="relative"/>}
-					<CalendarComponent />
+					{value==="require"&&(
+						<>
+							<DateComponent/>
+							<CalendarComponent />
+						</>
+					)}
+					{value==="relative"&&<RelativeSetting/>}
 				</div>
 				<Navlist classname={styles.navlist} />
 			</div>

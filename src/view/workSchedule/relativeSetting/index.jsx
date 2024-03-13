@@ -1,44 +1,45 @@
-import styles from "./index.module.less";
-import { Flex, Space } from 'antd';
+import { Card, Space } from 'antd';
 import { useState } from "react";
-import {WorkSheduleProvider,useWorkShedule} from '@/context/workSheduleContext'
+import { WorkSheduleProvider, useWorkShedule } from '@/context/workSheduleContext'
+const { Grid } = Card;
 function App() {
 	const workShedule = useWorkShedule();
-	const options = [
-		{
-			label: '人员设置',
-			value: 'people',
-		},
-		{
-			label: '班设置',
-			value: 'shifts',
-		},
-		{
-			label: '需求设置',
-			value: 'require',
-		},
-		{
-			label: '休息日设置',
-			value: 'offdays',
-		},
-		{
-			label: '关联设置',
-			value: 'relations',
-		},
-	];
-	const [value, setValue] = useState(options[0].value);
+	let configTemplate = workShedule.config.template,
+		configdata = workShedule.config.data;
 	return (
 		<>
-			<Space direction="vertical">
-				<div>
-                    111
-				</div>
-				<div>
-                    111
-				</div>
-				<div>
-                    111
-				</div>
+			<Space wrap={true}>
+				{
+					Object.keys(configTemplate).map(key=>{
+						return (
+							<Card
+								hoverable
+								key={key}
+								title={configTemplate[key].title}
+								style={{
+									textAlign: 'center',
+								}}
+							>
+								{
+									configTemplate[key].children.map(items=>{
+										let {title,type,name} =items;
+										return (
+											<Grid
+												key={name}
+												style={{
+													width: '100%',
+													textAlign: 'center',
+												}}
+											>
+												{title}:{configdata[key][name]}
+											</Grid>
+										)
+									})
+								}
+							</Card>
+						)
+					})
+				}
 			</Space>
 		</>
 	);
@@ -46,9 +47,7 @@ function App() {
 
 function WithProvider() {
 	return (
-		<WorkSheduleProvider>
-			<App/>
-		</WorkSheduleProvider>
+		<App />
 	)
 }
 export default WithProvider;

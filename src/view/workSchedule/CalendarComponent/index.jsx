@@ -4,6 +4,7 @@ import React from 'react';
 import { Calendar, Menu } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import {useContextMenuStatus} from '@/hook/useContextMenuStatus'
+import {useWorkSheduleDispatch,useWorkShedule} from '@/context/workSheduleContext';
 import classNames from 'classnames';
 import { Lunar, HolidayUtil } from 'lunar-javascript';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -12,9 +13,18 @@ function App() {
 	//日历功能
 	const [selectDate, setSelectDate] = React.useState(dayjs());
 	const [contextmenu, setContextmenu] = React.useState();
-	const [rangetime, setRangetime] = React.useState([dayjs(),dayjs()]);
 	const [isMouseDown, setIsMouseDown] = React.useState(false);
 	let isContextMenuOpen=useContextMenuStatus(()=>{setContextmenu(null)});
+	const workShedule = useWorkShedule();
+	let rangetime=workShedule.day.range;
+	let WorkSheduleDispatch=useWorkSheduleDispatch();
+	let setTime=(time)=>{
+		if(time[1].isBefore(time[0])){
+			WorkSheduleDispatch({type: 'setday',data:[time[1],time[0]]});
+		}else{
+			WorkSheduleDispatch({type: 'setday',data:time});
+		}
+	}
 	let cellRender = (date, info) => {
 		const d = Lunar.fromDate(date.toDate());
 		const lunar = d.getDayInChinese();
@@ -34,7 +44,7 @@ function App() {
 							if(e.button == 0&&!isMouseDown){
 								let time=date.format();
 								console.log("down",time);
-								setRangetime([time,time]);
+								setTime([date,date]);
 								setIsMouseDown(true);
 							}
 						}}
@@ -42,14 +52,14 @@ function App() {
 							let time=date.format();
 							console.log("enter",time);
 							if (isMouseDown) {
-								setRangetime([rangetime[0],time]);
+								setTime([rangetime[0],date]);
 							}
 						}}
 						onMouseUp={()=>{
 							let time=date.format();
 							console.log("up",time);
 							if (isMouseDown) {
-								setRangetime([rangetime[0],time]);
+								setTime([rangetime[0],date]);
 							}
 							setIsMouseDown(false);
 						}}
@@ -108,19 +118,19 @@ function App() {
 						console.log({  key, keyPath,e },contextmenu.date);
 						switch (key) {
 							case "startSetStartDay":{
-								let time=contextmenu.date.format();
-								setRangetime([time,time]);
+								// let time=contextmenu.date.format();
+								setTime([contextmenu.date,contextmenu.date]);
 								setIsMouseDown(true);
 								break;
 							}
 							case "startDay":{
-								let time=contextmenu.date.format();
-								setRangetime([time,rangetime[1]]);
+								// let time=contextmenu.date.format();
+								setTime([contextmenu.date,rangetime[1]]);
 								break;
 							}
 							case "endDay":{
-								let time=contextmenu.date.format();
-								setRangetime([rangetime[0],time]);
+								// let time=contextmenu.date.format();
+								setTime([rangetime[0],contextmenu.date]);
 								setIsMouseDown(false);
 								break;
 							}

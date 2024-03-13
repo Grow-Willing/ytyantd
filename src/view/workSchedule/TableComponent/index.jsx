@@ -216,14 +216,11 @@ function App({tableName}) {
 								person_list:workSchedule["people"].data,
 								input_shift_list:workSchedule["shifts"].data,
 								// offday_config:workSchedule["offdays"].data,
-								offday_config:{
-									"maxlength":8,
-									"minlength":2
-								},
+								offday_config:workSchedule["config"].data.offday_config,
 								equalGroup_list:workSchedule["dependency"].equalGroup.value,
 								qualification:workSchedule["dependency"].qualification.value,
 								num_shift_daily:1,
-								input_num_days:8
+								input_num_days:workSchedule["day"].input_num_days
 							};
 							axios({
 								method: schedulemethod,

@@ -1,5 +1,7 @@
 import { createContext, useContext, useReducer } from 'react';
-
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 const WorkSheduleContext = createContext(null);
 
 const WorkSheduleDispatchContext = createContext(null);
@@ -75,20 +77,6 @@ const initialWorkShedulestate = {
 		key:0,
 		data:[]
 	},
-	offdays:{
-		columns:[
-			{
-				title: '最短连续天数',
-				dataIndex: 'minlength',
-			},
-			{
-				title: '最大连续天数',
-				dataIndex: 'maxlength',
-			},
-		],
-		key:0,
-		data:[]
-	},
 	dependency:{
 		equalGroup:{
 			used:"people",
@@ -106,7 +94,39 @@ const initialWorkShedulestate = {
 				"CCIE"
 			]
 		}
-	}
+	},
+	config:{
+		template:{
+			offday_config:{
+				"title":"休息日设置",
+				children:[
+					{
+						title: '最短连续天数',
+						type: Number,
+						name:"minlength",
+					},
+					{
+						title: '最大连续天数',
+						type: Number,
+						name:"maxlength"
+					},
+				]
+				
+			},
+		},
+		data:{
+			offday_config:{
+				"minlength":2,
+				"maxlength":8,
+			},
+		}
+	},
+	day:{
+		range:[dayjs(),dayjs()],
+		get input_num_days(){
+			return Math.abs(this.range[0].diff(this.range[1],"day"));
+		},
+	},
 };
 export function WorkSheduleProvider({ children }) {
 	const [WorkShedule, dispatch] = useReducer(
@@ -184,6 +204,22 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 						})
 					}
 				}
+				return newstate;
+			}
+			return lastWorkShedule;
+		}
+		case 'setinput_num_days':{
+			if(typeof action.data == 'number'){
+				let newstate={...lastWorkShedule};
+				newstate.input_num_days = action.data;
+				return newstate;
+			}
+			return lastWorkShedule;
+		}
+		case 'setday':{
+			if(Array.isArray(action.data)&&action.data.length==2&&dayjs.isDayjs(action.data[0])&&dayjs.isDayjs(action.data[1])){
+				let newstate={...lastWorkShedule};
+				newstate.day.range = action.data;
 				return newstate;
 			}
 			return lastWorkShedule;
