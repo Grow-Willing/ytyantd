@@ -95,6 +95,7 @@ const initialWorkShedulestate = {
 			]
 		}
 	},
+	// 整体设置项
 	config:{
 		template:{
 			offday_config:{
@@ -121,6 +122,7 @@ const initialWorkShedulestate = {
 			},
 		}
 	},
+	// 保存求解日期
 	day:{
 		range:[dayjs(),dayjs()],
 		get input_num_days(){
@@ -221,6 +223,19 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 				let newstate={...lastWorkShedule};
 				newstate.day.range = action.data;
 				return newstate;
+			}
+			return lastWorkShedule;
+		}
+		case 'setconfig':{
+			try {
+				if(Object.keys(lastWorkShedule.config.template).includes(action.key)&&action.name&&action.data){
+					let newstate={...lastWorkShedule};
+					newstate.config.data[action.key][action.name] = action.data;
+					return newstate;
+				}
+			} catch (error) {
+				console.log(error);
+				return lastWorkShedule;
 			}
 			return lastWorkShedule;
 		}
