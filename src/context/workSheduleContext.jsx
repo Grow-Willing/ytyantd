@@ -56,7 +56,7 @@ const initialWorkShedulestate = {
 				description:"此班所算工时"
 			},
 			{
-				title: '所需上班天数',
+				title: '一轮排班上班天数',
 				dataIndex: 'bancount',
 				type:"number",
 				default:1,
@@ -73,13 +73,20 @@ const initialWorkShedulestate = {
 				type:"number",
 				default:4,
 			},
+			{
+				title: '资质',
+				dataIndex: 'qualification',
+				description:"需要什么资质才可以上此班",
+				type:"list",
+				default:[],
+			},
 		],
 		key:0,
 		data:[]
 	},
 	dependency:{
 		equalGroup:{
-			used:"people",
+			used:["people"],
 			value:[
 				"第一小队",
 				"第二小队",
@@ -87,7 +94,7 @@ const initialWorkShedulestate = {
 			]
 		},
 		qualification:{
-			used:"people",
+			used:["people","shifts"],
 			value:[
 				"CCNA",
 				"CCNP",
@@ -199,11 +206,13 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 						newstate.dependency[action.key].value[action.index]=action.value;
 					}else{
 						newstate.dependency[action.key].value=action.value;
-						newstate[newstate.dependency[action.key].used].data=newstate[newstate.dependency[action.key].used].data.map(v=>{
-							let newret={...v};
-							newret[action.key]=[];
-							return newret;
-						})
+						newstate.dependency[action.key].used.forEach(element => {
+							newstate[element].data=newstate[element].data.map(v=>{
+								let newret={...v};
+								newret[action.key]=[];
+								return newret;
+							})
+						});
 					}
 				}
 				return newstate;

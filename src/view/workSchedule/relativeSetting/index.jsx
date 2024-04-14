@@ -51,6 +51,7 @@ function App() {
 												onClick={() => {
 													setEditFlag([key, items]);
 												}}
+												onMouseDown={(e) => e.preventDefault()}
 											>
 												{
 													(editFlag.length&&key == editFlag[0] && items == editFlag[1]) ?
