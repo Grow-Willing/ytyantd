@@ -19,3 +19,5 @@ jobs:
           account_type: user
           force_update: true
           timeout: '1h'
+          static_list: "ytyantd"
+          mappings: "ytyantd=>ytantd"
