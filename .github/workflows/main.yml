@@ -1,10 +1,21 @@
-- name: Mirror the Github organization repos to Gitee.
-  uses: Yikun/hub-mirror-action@master
-  with:
-    src: github/Grow-Willing
-    dst: gitee/growwilling
-    dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
-    dst_token: ${{ secrets.GITEE_TOKEN }}
-    account_type: user
-    force_update: true
-    timeout: '1h'
+name: Sync Github Repos To Gitee
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Mirror the Github organization repos to Gitee.
+        uses: Yikun/hub-mirror-action@master
+        with:
+          src: github/Grow-Willing
+          dst: gitee/growwilling
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          account_type: user
+          force_update: true
+          timeout: '1h'
