@@ -17,8 +17,10 @@ jobs:
           dst: gitee/growwilling
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token: ${{ secrets.GITEE_TOKEN }}
+          clone_style: "ssh"
           account_type: user
           force_update: true
           timeout: '1h'
           static_list: "ytyantd"
           mappings: "ytyantd=>ytantd"
+          debug: true
