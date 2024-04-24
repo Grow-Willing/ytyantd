@@ -33,7 +33,7 @@ function App() {
 			dataIndex: i,
 			title: i+1,
 		}
-	} )
+	})
 	columns.splice(0, 0, {
 		dataIndex:"name",
 		title:"姓名",
