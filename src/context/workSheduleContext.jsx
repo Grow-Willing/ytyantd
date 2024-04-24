@@ -136,6 +136,11 @@ const initialWorkShedulestate = {
 			return Math.abs(this.range[0].diff(this.range[1],"day"));
 		},
 	},
+	//请求返回的数据
+	request:{
+		loading:false,
+		data:null
+	}
 };
 export function WorkSheduleProvider({ children }) {
 	const [WorkShedule, dispatch] = useReducer(
@@ -241,6 +246,30 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 					let newstate={...lastWorkShedule};
 					newstate.config.data[action.key][action.name] = action.data;
 					return newstate;
+				}
+			} catch (error) {
+				console.log(error);
+				return lastWorkShedule;
+			}
+			return lastWorkShedule;
+		}
+		case 'setrequest':{
+			try {
+				if(action.name){
+					if(action.loading){
+						let newstate={...lastWorkShedule};
+						newstate.request.loading = true;
+						return newstate;
+					}else{
+						let newstate={...lastWorkShedule};
+						newstate.request.loading = false;
+						if(Array.isArray(action.data)){
+							newstate.request.data = action.data;
+						}else{
+							newstate.request.data = null;
+						}
+						return newstate;
+					}
 				}
 			} catch (error) {
 				console.log(error);

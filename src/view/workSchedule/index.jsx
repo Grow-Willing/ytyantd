@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import CalendarComponent from "./CalendarComponent";
 import TableComponent from "./TableComponent";
 import DateComponent from "./dateComponent";
+import ShiftShowComponent from "./ShiftShowComponent";
 import RelativeSetting from "./relativeSetting";
 import Navlist from '@/component/navlist';
 import {WorkSheduleProvider,useWorkShedule} from '@/context/workSheduleContext'
@@ -48,6 +49,7 @@ function App() {
 						</>
 					)}
 					{value==="relative"&&<RelativeSetting/>}
+					<ShiftShowComponent />
 				</div>
 				<Navlist classname={styles.navlist} />
 			</div>

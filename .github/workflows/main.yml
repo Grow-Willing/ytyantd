@@ -24,3 +24,31 @@ jobs:
           timeout: '1h'
           static_list: "ytyantd"
           debug: true
+      - name: build
+        run: |
+          npm i
+          npm run build
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+            key: ${{ secrets.GITEE_PRIVATE_KEY }}
+            name: gitee_rsa
+            known_hosts: ${{ secrets.GITEE_KNOWN_HOSTS }}
+            config: |
+              Host gitee.com
+                HostName gitee.com
+                User git
+                IdentityFile ~/.ssh/gitee_rsa
+                IdentitiesOnly yes
+      - name: push build
+        working-directory: ..
+        run: |
+          pwd
+          git clone git@gitee.com:growwilling/toc.git
+          mv ./${{ github.event.repository.name }}/dist ./toc
+          git config --global user.email "<>"
+          git config --global user.name "Github Build Action"
+          cd ./toc
+          git add .
+          git commit -m "fontend build"
+          git push
