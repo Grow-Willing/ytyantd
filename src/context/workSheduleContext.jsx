@@ -139,7 +139,7 @@ const initialWorkShedulestate = {
 	//请求返回的数据
 	request:{
 		loading:false,
-		data:null
+		data:[]
 	}
 };
 export function WorkSheduleProvider({ children }) {

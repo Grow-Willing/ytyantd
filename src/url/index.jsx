@@ -1,5 +1,5 @@
 export default {
-	baseurl: 'http://192.168.1.191:5000',
+	baseurl: 'http://172.16.3.34',
 	login:{
 		url:'/api/login',
 		method:"post"
