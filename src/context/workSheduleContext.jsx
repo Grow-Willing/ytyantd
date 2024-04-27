@@ -129,11 +129,12 @@ const initialWorkShedulestate = {
 			},
 		}
 	},
+	require:[],
 	// 保存求解日期
 	day:{
 		range:[dayjs(),dayjs()],
 		get input_num_days(){
-			return Math.abs(this.range[0].diff(this.range[1],"day"));
+			return Math.abs(this.range[0].diff(this.range[1],"day"))+1;
 		},
 	},
 	//请求返回的数据
@@ -255,27 +256,40 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 		}
 		case 'setrequest':{
 			try {
-				if(action.name){
-					if(action.loading){
-						let newstate={...lastWorkShedule};
-						newstate.request.loading = true;
-						return newstate;
+				if(action.loading){
+					let newstate={...lastWorkShedule};
+					newstate.request.loading = true;
+					return newstate;
+				}else{
+					let newstate={...lastWorkShedule};
+					newstate.request.loading = false;
+					if(Array.isArray(action.data)){
+						newstate.request.data = action.data[0];
 					}else{
-						let newstate={...lastWorkShedule};
-						newstate.request.loading = false;
-						if(Array.isArray(action.data)){
-							newstate.request.data = action.data;
-						}else{
-							newstate.request.data = null;
-						}
-						return newstate;
+						newstate.request.data = null;
 					}
+					return newstate;
 				}
 			} catch (error) {
 				console.log(error);
 				return lastWorkShedule;
 			}
-			return lastWorkShedule;
+		}
+		case 'setRequire':{
+			try {
+				let {n,s,d,v}=action.payload;
+				if(!n && n!=0 | !s && s!=0 | !d && d!=0 | !v && v!=0 ) {
+					let newstate={...lastWorkShedule};
+					let newitem={n,s,d,v};
+					newstate.require=[...newstate.require,newitem];
+					return newstate;
+				}else{
+					return lastWorkShedule;
+				}
+			} catch (error) {
+				console.log(error);
+				return lastWorkShedule;
+			}
 		}
 		default: {
 			throw Error('Unknown action: ' + action.type);

@@ -201,12 +201,12 @@ function App({tableName}) {
 						}}
 					/>
 				</Tooltip>
-				<Tooltip placement="top" title="从文件导入">
+				{/* <Tooltip placement="top" title="从文件导入">
 					<Button
 						icon={<ImportOutlined />}
 						onClick={handleClickupload}
 					/>
-				</Tooltip>
+				</Tooltip> */}
 				<Tooltip placement="top" title="生成班表">
 					<Button
 						icon={<MyIcon type="icon-paibanguanli" />}
@@ -220,7 +220,8 @@ function App({tableName}) {
 								equalGroup_list:workSchedule["dependency"].equalGroup.value,
 								qualification:workSchedule["dependency"].qualification.value,
 								num_shift_daily:1,
-								input_num_days:workSchedule["day"].input_num_days
+								input_num_days:workSchedule["day"].input_num_days,
+								requirelist:workSchedule["require"],
 							};
 							axios({
 								method: schedulemethod,
@@ -228,8 +229,9 @@ function App({tableName}) {
 								data: requestData,
 								timeout:3000
 							}).then(function (response) {
-								// let {code,data:{token},msg}= response.data;
-								console.log(response.data);
+								let {code,data,msg}= response.data;
+								WorkSheduleDispatch({type: 'setrequest',loading:false,data});
+								console.log(data);
 							}).catch(function (error) {
 								if (error.response) {
 									// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
@@ -249,6 +251,7 @@ function App({tableName}) {
 								}
 								console.log(error.config);
 							});
+							WorkSheduleDispatch({type: 'setrequest',loading:true});
 						}}
 					/>
 				</Tooltip>

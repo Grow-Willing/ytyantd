@@ -1,25 +1,27 @@
 import dayjs from 'dayjs';
 import styles from "./index.module.less";
 import React, { useState } from 'react';
-import { Calendar, Menu, Segmented, Table } from 'antd';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
-import {useContextMenuStatus} from '@/hook/useContextMenuStatus'
+import { Segmented, Table } from 'antd';
+import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import {useWorkSheduleDispatch,useWorkShedule} from '@/context/workSheduleContext';
-import classNames from 'classnames';
-import { Lunar, HolidayUtil } from 'lunar-javascript';
+
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 function App() {
 	const workShedule = useWorkShedule();
 	let dataSource= workShedule.people.data.map((people,index)=>{
 		let list=[];
+		let peopleCounts=workShedule.people.data.length;
 		for(let i=0;i<workShedule.day.input_num_days;i++) {
-			let todayShiftList=workShedule.request.data[index+i]??[];
+			let todayShiftList=workShedule.request.data[index*peopleCounts+i]??[];
 			let returndata="";
 			for(let j=0;j<todayShiftList.length;j++) {
 				if(todayShiftList[j]=="1"){
-					returndata+=`${workShedule.shifts.data[i].name}\n`
+					returndata+=`${workShedule.shifts.data[j].name}\n`
 				}
+			}
+			if(returndata==""){
+				returndata+="休";
 			}
 			list.push(returndata);
 		}
@@ -41,30 +43,23 @@ function App() {
 	});
 	const options = [
 		{
-			label: '人员设置',
-			value: 'people',
+			label: '列表模式',
+			value: 'list',
+			icon: <BarsOutlined />,
 		},
 		{
-			label: '班设置',
-			value: 'shifts',
-		},
-		{
-			label: '日期和需求',
-			value: 'require',
-		},
-		{
-			label: '相关设置',
-			value: 'relative',
+			label: '表格模式',
+			value: 'table',
+			icon: <AppstoreOutlined />,
 		},
 	];
 	const [optionsvalue, setOptionsvalue] = useState(options[0].value);
-	let rangetime=workShedule.day.range;
 	return (
 		<>
-			<Segmented
+			{/* <Segmented
 				options={options}
 				onChange={setOptionsvalue}
-			/>
+			/> */}
 			<Table
 				columns={columns}
 				dataSource={dataSource}

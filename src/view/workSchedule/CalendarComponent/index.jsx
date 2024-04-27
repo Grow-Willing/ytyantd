@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import styles from "./index.module.less";
-import React from 'react';
-import { Calendar, Menu } from 'antd';
+import React, { useState } from 'react';
+import { Calendar, Form, Menu, Modal, Select } from 'antd';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import {useContextMenuStatus} from '@/hook/useContextMenuStatus'
 import {useWorkSheduleDispatch,useWorkShedule} from '@/context/workSheduleContext';
@@ -11,9 +11,9 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 function App() {
 	//日历功能
-	const [selectDate, setSelectDate] = React.useState(dayjs());
-	const [contextmenu, setContextmenu] = React.useState();
-	const [isMouseDown, setIsMouseDown] = React.useState(false);
+	const [selectDate, setSelectDate] = useState(dayjs());
+	const [contextmenu, setContextmenu] = useState();
+	const [isMouseDown, setIsMouseDown] = useState(false);
 	let isContextMenuOpen=useContextMenuStatus(()=>{setContextmenu(null)});
 	const workShedule = useWorkShedule();
 	let rangetime=workShedule.day.range;
@@ -24,6 +24,48 @@ function App() {
 		}else{
 			WorkSheduleDispatch({type: 'setday',data:time});
 		}
+	}
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	let defaultmodalData={
+		title:"人员需求设置",
+		who:null,
+		do:null,
+		what:null,
+		time:null,
+	};
+	const [modalData, setModalData] = useState(defaultmodalData);
+	let peoplelist = workShedule.people.data.map((v,i)=>{
+		return {
+			value:i,
+			label:v.name
+		}
+	});
+	let shiftlist = workShedule.shifts.data.map((v,i)=>{
+		return {
+			value:i,
+			label:v.name
+		}
+	});
+	const [form] = Form.useForm();
+	let openRequireModel=(time)=>{
+		setIsModalOpen(true);
+		let nextdata={...modalData};
+		nextdata.time = time;
+		setModalData(nextdata);
+	}
+	let setRequire=()=>{
+		console.log(modalData.time.diff(workShedule.day.range[0],"day"));
+		WorkSheduleDispatch({
+			type:"setRequire",
+			payload:{
+				n:modalData.who,
+				s:modalData.what,
+				d:modalData.time.diff(workShedule.day.range[0],"day"),
+				v:modalData.do
+			}
+		});
+		setIsModalOpen(false);
+		setModalData(defaultmodalData);
 	}
 	let cellRender = (date, info) => {
 		const d = Lunar.fromDate(date.toDate());
@@ -134,6 +176,11 @@ function App() {
 								setIsMouseDown(false);
 								break;
 							}
+							case "setrequire":{
+								// let time=contextmenu.date.format();
+								openRequireModel(contextmenu.date);
+								break;
+							}
 							default:
 								break;
 						}
@@ -169,9 +216,80 @@ function App() {
 							label: "设定为结束日期",
 							key: 'endDay',
 							icon: <MailOutlined />,
-						}
+						},
+						{
+							label: "设置需求",
+							key: 'setrequire',
+							icon: <MailOutlined />,
+						},
 					]}
 				/>
+				<Modal
+					title={modalData.title}
+					centered
+					open={isModalOpen}
+					onOk={setRequire}
+					onCancel={()=>setIsModalOpen(false)}
+				>
+					<Form
+						form={form}
+					>
+						<Form.Item
+							name="n"
+							label="需求人"
+						>
+							<Select
+								placeholder="需求人"
+								value={modalData.who}
+								onChange={(value)=>{
+									let newdata={...modalData};
+									newdata.who=value;
+									setModalData(newdata);
+								}}
+								options={peoplelist}
+							/>
+						</Form.Item>
+						<Form.Item
+							name="v"
+							label="必须/不能上某个班"
+						>
+							<Select
+								placeholder="必须/不能上某个班"
+								value={modalData.do}
+								onChange={(value)=>{
+									let newdata={...modalData};
+									newdata.do=value;
+									setModalData(newdata);
+								}}
+								options={[
+									{
+										value: 0,
+										label: '不能上',
+									},
+									{
+										value: 1,
+										label: '必须上',
+									},
+								]}
+							/>
+						</Form.Item>
+						<Form.Item
+							name="s"
+							label="？班"
+						>
+							<Select
+								placeholder="？班"
+								value={modalData.what}
+								onChange={(value)=>{
+									let newdata={...modalData};
+									newdata.what=value;
+									setModalData(newdata);
+								}}
+								options={shiftlist}
+							/>
+						</Form.Item>
+					</Form>
+				</Modal>
 			</div>
 		</>
 	);

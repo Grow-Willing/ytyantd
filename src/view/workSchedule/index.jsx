@@ -49,7 +49,7 @@ function App() {
 						</>
 					)}
 					{value==="relative"&&<RelativeSetting/>}
-					<ShiftShowComponent />
+					{workShedule.request.data.length>0&&<ShiftShowComponent />}
 				</div>
 				<Navlist classname={styles.navlist} />
 			</div>
