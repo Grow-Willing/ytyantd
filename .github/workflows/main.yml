@@ -45,7 +45,7 @@ jobs:
         run: |
           pwd
           git clone git@gitee.com:growwilling/toc.git
-          rm ./toc -rf
+          rm ./toc/dist -rf
           mv ./${{ github.event.repository.name }}/dist ./toc
           git config --global user.email "<>"
           git config --global user.name "Github Build Action"
