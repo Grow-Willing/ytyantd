@@ -1,4 +1,4 @@
-import { Button, Select, Space, Table, Tooltip,InputNumber, Modal, Slider } from 'antd';
+import { Button, Select, Space, Table, Tooltip,InputNumber, Modal, Slider, message } from 'antd';
 import { useEffect, useState } from "react";
 import EditableCell from './editablecell'
 import CellModel from './cellModel'
@@ -6,6 +6,7 @@ import { PlusOutlined,DeleteOutlined,ImportOutlined,createFromIconfontCN} from "
 import {useWorkShedule,useWorkSheduleDispatch} from '@/context/workSheduleContext';
 import axios from 'axios';
 import urlconfig from "@/url/index";
+import Excel from 'exceljs'
 
 const MyIcon = createFromIconfontCN({
 	scriptUrl: "/iconfont.js",
@@ -127,7 +128,7 @@ function App({tableName}) {
 							max={col.max}
 							value={text}
 							onChange={(value)=>{
-								if(value??false)handleSave(index,col.dataIndex,value);
+								handleSave(index,col.dataIndex,value);
 							}}
 							changeOnWheel
 						/>;
@@ -170,11 +171,41 @@ function App({tableName}) {
 	let handleClickupload = () => {
 		let fileinput = document.createElement("input");
 		fileinput.type = "file";
+		fileinput.accept = ".xlsx,.xls";
 		fileinput.onchange = (e) => {
 			console.log(e.target.files);
 			for (let i = 0; i < e.target.files.length; i++) {
 				let file = e.target.files[i];
 				console.log(`… file[${i}].name = ${file.name}`);
+				var reader = new FileReader(); //读取操作就是由它完成.
+				reader.readAsBinaryString(file);//读取文件的内容,也可以读取文件的URL
+				reader.onload = function (evt) {
+						//当读取完成后回调这个函数,然后此时文件的内容存储到了result中,直接操作即可
+						var data = evt.target.result;
+						const workbook = new Excel.Workbook();
+						workbook.xlsx.load(data).then((wb) => {
+							// wb.eachSheet(function(worksheet, sheetId) {
+							// 	console.log(worksheet.name);
+							// 	worksheet.eachRow(function(row, rowNumber) {
+							// 		console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+							// 	});
+							// });
+							let worksheet=wb.getWorksheet('人员');
+							worksheet.eachRow(function(row, rowNumber) {
+								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+							});
+							worksheet=wb.getWorksheet('班列表');
+							worksheet.eachRow(function(row, rowNumber) {
+								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+							});
+							worksheet=wb.getWorksheet('设置');
+							worksheet.eachRow(function(row, rowNumber) {
+								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+							});
+
+						});
+				}
+
 			}
 			console.log(workSchedule);
 		};
@@ -201,12 +232,12 @@ function App({tableName}) {
 						}}
 					/>
 				</Tooltip>
-				{/* <Tooltip placement="top" title="从文件导入">
+				<Tooltip placement="top" title="从文件导入">
 					<Button
 						icon={<ImportOutlined />}
 						onClick={handleClickupload}
 					/>
-				</Tooltip> */}
+				</Tooltip>
 				<Tooltip placement="top" title="生成班表">
 					<Button
 						icon={<MyIcon type="icon-paibanguanli" />}

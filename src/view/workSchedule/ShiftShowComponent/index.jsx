@@ -13,7 +13,7 @@ function App() {
 		let list=[];
 		let peopleCounts=workShedule.people.data.length;
 		for(let i=0;i<workShedule.day.input_num_days;i++) {
-			let todayShiftList=workShedule.request.data[index*peopleCounts+i]??[];
+			let todayShiftList=workShedule.request.data[(index*peopleCounts+i)%workShedule.people.data.length]??[];
 			let returndata="";
 			for(let j=0;j<todayShiftList.length;j++) {
 				if(todayShiftList[j]=="1"){
