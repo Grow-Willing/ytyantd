@@ -190,19 +190,109 @@ function App({tableName}) {
 							// 		console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
 							// 	});
 							// });
-							let worksheet=wb.getWorksheet('人员');
+							//先解析dependency，别的会用到
+							let dependency=[],config={};
+							let worksheet=wb.getWorksheet('设置');
 							worksheet.eachRow(function(row, rowNumber) {
-								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+								let truevalues=row.values.filter((v)=>v);
+								let title = truevalues[0];
+								switch (title) {
+									case "资质":
+										dependency.push({
+											name:"qualification",
+											value:truevalues.slice(1)
+										});
+										break;
+									case "等价组":
+										dependency.push({
+											name:"equalGroup",
+											value:truevalues.slice(1)
+										});
+										break;
+									case "日期":
+										config["day"]=truevalues.slice(1);
+										break;
+									case "休息天数":
+										config["offday_config"]=truevalues.slice(1);
+										break;
+									default:
+										break;
+								}
+							});
+							
+							worksheet=wb.getWorksheet('人员');
+							let sheetName="people";
+							let savedColumn=workSchedule[sheetName].columns,
+								inputColum;
+							let people={data:[],key:0};
+							worksheet.eachRow(function(row, rowNumber) {
+								if(rowNumber==1){
+									inputColum=row.values.map((v,i)=>{return {title:v,index:i}}).filter((v)=>v);
+									//校验数组是否一致
+									if(inputColum.length!==savedColumn.length)//长度
+										return;
+									let a=inputColum.toSorted((aa,bb) => aa.title.localeCompare(bb.title,'zh')),
+										b=savedColumn.toSorted((aa,bb) => aa.title.localeCompare(bb.title,'zh'));
+									if(!b.every((v,i)=>v.title==a[i].title)) return;//标题需要一致
+								}else{
+									let nextdata={
+										//下标1开始，去除标题行，共两行
+										key:workSchedule[sheetName].key+rowNumber-2,
+									};
+									inputColum.forEach((v,i) => {
+										let k=savedColumn[i].dataIndex,
+											val=row.values[v.index];
+										console.log(val);
+										if(savedColumn[i].type=="list"){
+											nextdata[k]=val.split(",");
+										}else{
+											nextdata[k]=val;
+										}
+									});
+									people.data.push(nextdata);
+									people.key=Math.max(people.key,workSchedule[sheetName].key+rowNumber-2);
+								}
 							});
 							worksheet=wb.getWorksheet('班列表');
+							savedColumn=workSchedule.shifts.columns;
+							let shifts={data:[],key:0};
 							worksheet.eachRow(function(row, rowNumber) {
-								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
+								if(rowNumber==1){
+									inputColum=row.values.map((v,i)=>{return {title:v,index:i}}).filter((v)=>v);
+									//校验数组是否一致
+									if(inputColum.length!==savedColumn.length)//长度
+										return;
+									let a=inputColum.toSorted((aa,bb) => aa.title.localeCompare(bb.title,'zh')),
+										b=savedColumn.toSorted((aa,bb) => aa.title.localeCompare(bb.title,'zh'));
+									if(!b.every((v,i)=>v.title==a[i].title)) return;//标题需要一致
+								}else{
+									let nextdata={
+										//下标1开始，去除标题行，共两行
+										key:workSchedule[sheetName].key+rowNumber-2,
+									};
+									inputColum.forEach((v,i) => {
+										let k=savedColumn[i].dataIndex,
+											val=row.values[v.index];
+										switch (savedColumn[i].type) {
+											case "list":
+												nextdata[k]=val.split(",");
+												break;
+											case "range":
+												nextdata[k]=val.split(",");
+												break;
+											
+											default:
+												nextdata[k]=val;
+												break;
+										}
+									});
+									shifts.data.push(nextdata);
+									shifts.key=Math.max(shifts.key,workSchedule[sheetName].key+rowNumber-2);
+								}
 							});
-							worksheet=wb.getWorksheet('设置');
-							worksheet.eachRow(function(row, rowNumber) {
-								console.log('Row ' + rowNumber + ' = ' + JSON.stringify(row.values));
-							});
-
+							let payload={people,shifts,dependency,config};
+							console.log("调用dispatch");
+							WorkSheduleDispatch({type: 'importData', data: payload});
 						});
 				}
 

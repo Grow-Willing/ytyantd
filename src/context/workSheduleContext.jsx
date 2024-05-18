@@ -132,7 +132,16 @@ const initialWorkShedulestate = {
 	require:[],
 	// 保存求解日期
 	day:{
-		range:[dayjs(),dayjs()],
+		_range:[dayjs(),dayjs()],
+		set range(x){
+			if(!Array.isArray(x)) return;
+			if(x.length !== 2) return;
+			this._range[0]=dayjs.isDayjs(x[0])?x[0]:dayjs(x[0]);
+			this._range[1]=dayjs.isDayjs(x[1])?x[1]:dayjs(x[1]);
+		},
+		get range(){
+			return this._range;
+		},
 		get input_num_days(){
 			return Math.abs(this.range[0].diff(this.range[1],"day"))+1;
 		},
@@ -176,6 +185,28 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 				}else{
 					newstate[action.tableName]["columns"] = action.columns;
 				}
+				return newstate;
+			}
+			return lastWorkShedule;
+		}
+		case 'importData': {
+			let {people,shifts,dependency,config} = action.data;
+			console.log(people,shifts,dependency,config);
+			if(people&&shifts&&dependency&&config){
+				let newstate={...lastWorkShedule};
+				newstate["people"].data=[...people.data];
+				newstate["shifts"].data=[...shifts.data];
+				newstate["day"].range=config["day"];
+				if(config["offday_config"]&&config["offday_config"].length==2){
+					let offday_config={
+						"minlength":config["offday_config"][0],
+						"maxlength":config["offday_config"][1],
+					}
+					newstate["config"].data["offday_config"]=offday_config;
+				}
+				dependency.forEach((v,i)=>{
+					newstate.dependency[v.name].value=[...v.value];
+				})
 				return newstate;
 			}
 			return lastWorkShedule;

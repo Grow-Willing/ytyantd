@@ -1,7 +1,6 @@
 import EditableText from '@/component/editableText'
 
 function App({dataIndex,record,children,onChange,...restProps}) {
-	console.log(record);
 	let childNode=dataIndex?(
 		<EditableText
 			text={record[dataIndex]}
