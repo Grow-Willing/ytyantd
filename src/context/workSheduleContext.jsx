@@ -25,7 +25,7 @@ const initialWorkShedulestate = {
 				title:"等价组",
 				dataIndex:"equalGroup", 
 				type:"select",
-				default:null,
+				default:0,
 				description:"同组的成员班表顺序一样，但可能会错开在不同天；不同组互不影响"
 			},
 		],

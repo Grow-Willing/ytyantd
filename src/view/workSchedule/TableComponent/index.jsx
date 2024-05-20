@@ -242,9 +242,12 @@ function App({tableName}) {
 									inputColum.forEach((v,i) => {
 										let k=savedColumn[i].dataIndex,
 											val=row.values[v.index];
-										console.log(val);
 										if(savedColumn[i].type=="list"){
-											nextdata[k]=val.split(",");
+											nextdata[k]=val.split(",").map((v) =>{
+												return workSchedule["dependency"][savedColumn[i].dataIndex].value.indexOf(v);
+											});
+										}else if(savedColumn[i].type=="select"){
+											nextdata[k]=workSchedule["dependency"][savedColumn[i].dataIndex].value.indexOf(val);
 										}else{
 											nextdata[k]=val;
 										}
@@ -275,7 +278,9 @@ function App({tableName}) {
 											val=row.values[v.index];
 										switch (savedColumn[i].type) {
 											case "list":
-												nextdata[k]=val.split(",");
+												nextdata[k]=val.split(",").map((v) =>{
+													return workSchedule["dependency"][savedColumn[i].dataIndex].value.indexOf(v);
+												});
 												break;
 											case "range":
 												nextdata[k]=val.split(",");
@@ -293,6 +298,8 @@ function App({tableName}) {
 							let payload={people,shifts,dependency,config};
 							console.log("调用dispatch");
 							WorkSheduleDispatch({type: 'importData', data: payload});
+						}).catch(err => {
+							message.error(err.message);
 						});
 				}
 
