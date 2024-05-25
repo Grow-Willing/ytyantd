@@ -30,7 +30,7 @@ const initialWorkShedulestate = {
 			},
 		],
 		key:0,
-		data:[]
+		data:[],
 	},
 	shifts:{
 		columns:[
@@ -136,8 +136,8 @@ const initialWorkShedulestate = {
 		set range(x){
 			if(!Array.isArray(x)) return;
 			if(x.length !== 2) return;
-			this._range[0]=dayjs.isDayjs(x[0])?x[0]:dayjs(x[0]);
-			this._range[1]=dayjs.isDayjs(x[1])?x[1]:dayjs(x[1]);
+			this._range[0]=dayjs.isDayjs(x[0])?x[0].hour(0):dayjs(x[0]).hour(0);
+			this._range[1]=dayjs.isDayjs(x[1])?x[1].hour(0):dayjs(x[1]).hour(0);
 		},
 		get range(){
 			return this._range;
@@ -150,6 +150,10 @@ const initialWorkShedulestate = {
 	request:{
 		loading:false,
 		data:[]
+	},
+	//临时保存的需要使用的变量
+	tmp:{
+
 	}
 };
 export function WorkSheduleProvider({ children }) {
@@ -294,11 +298,13 @@ function WorkSheduleReducer(lastWorkShedule, action) {
 				}else{
 					let newstate={...lastWorkShedule};
 					newstate.request.loading = false;
-					if(Array.isArray(action.data)){
-						newstate.request.data = action.data[0];
+					let {num_days,res}=action.data;
+					if(Array.isArray(res)&&res.length){
+						newstate.request.data = res[0];
 					}else{
-						newstate.request.data = null;
+						newstate.request.data = [];
 					}
+					newstate.tmp.num_days = num_days;
 					return newstate;
 				}
 			} catch (error) {

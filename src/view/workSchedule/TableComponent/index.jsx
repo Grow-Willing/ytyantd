@@ -283,7 +283,7 @@ function App({tableName}) {
 												});
 												break;
 											case "range":
-												nextdata[k]=val.split(",");
+												nextdata[k]=val.split(",").map((v) =>~~v);
 												break;
 											
 											default:
@@ -340,6 +340,17 @@ function App({tableName}) {
 						icon={<MyIcon type="icon-paibanguanli" />}
 						onClick={()=>{
 							let {url:scheduleurl,method:schedulemethod}=urlconfig.getschedule;
+							//计算等价组长度
+							let equalGroupList=[];
+							workSchedule["people"].data.forEach((data,index)=>{
+								if(equalGroupList[data.equalGroup]){
+									equalGroupList[data.equalGroup]+=1;
+								}else{
+									equalGroupList[data.equalGroup]=1;
+								}
+							});
+							equalGroupList.sort((a,b)=>b - a);
+							//请求体
 							let requestData={
 								person_list:workSchedule["people"].data,
 								input_shift_list:workSchedule["shifts"].data,
@@ -350,6 +361,7 @@ function App({tableName}) {
 								num_shift_daily:1,
 								input_num_days:workSchedule["day"].input_num_days,
 								requirelist:workSchedule["require"],
+								num_days:equalGroupList[0],
 							};
 							axios({
 								method: schedulemethod,
@@ -358,8 +370,10 @@ function App({tableName}) {
 								timeout:3000
 							}).then(function (response) {
 								let {code,data,msg}= response.data;
-								WorkSheduleDispatch({type: 'setrequest',loading:false,data});
 								console.log(data);
+								if(data){
+									WorkSheduleDispatch({type: 'setrequest',loading:false,data});
+								}
 							}).catch(function (error) {
 								if (error.response) {
 									// 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
