@@ -20,4 +20,8 @@ export default {
 		url: '/api/schedule',
 		method:"post"
 	},
+	uploadtemplate:{
+		url: '/template.xlsx',
+		method:"get"
+	},
 }

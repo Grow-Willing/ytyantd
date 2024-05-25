@@ -2,7 +2,7 @@ import { Button, Select, Space, Table, Tooltip,InputNumber, Modal, Slider, messa
 import { useEffect, useState } from "react";
 import EditableCell from './editablecell'
 import CellModel from './cellModel'
-import { PlusOutlined,DeleteOutlined,ImportOutlined,createFromIconfontCN} from "@ant-design/icons";
+import { PlusOutlined,DeleteOutlined,DownloadOutlined,ImportOutlined,ExportOutlined,createFromIconfontCN} from "@ant-design/icons";
 import {useWorkShedule,useWorkSheduleDispatch} from '@/context/workSheduleContext';
 import axios from 'axios';
 import urlconfig from "@/url/index";
@@ -167,6 +167,16 @@ function App({tableName}) {
 		columnWidth:"32px",
 		preserveSelectedRowKeys:false
 	}
+	//模板下载
+	let handleClickDownloadTemplate=()=>{
+		const downloadElement = document.createElement('a')
+		downloadElement.style.display = 'none';
+		downloadElement.href = urlconfig.uploadtemplate.url;
+		downloadElement.target = '_blank';
+		downloadElement.rel = 'noopener noreferrer';
+		downloadElement.download = "导入模板.xlsx";
+		downloadElement.click();
+	}
 	//点击上传文件
 	let handleClickupload = () => {
 		let fileinput = document.createElement("input");
@@ -308,6 +318,10 @@ function App({tableName}) {
 		};
 		fileinput.click();
 	}
+	//导出到文件
+	let handleClickExport=()=>{
+
+	}
 	return (
 		<>
 			<Space.Compact block>
@@ -329,12 +343,24 @@ function App({tableName}) {
 						}}
 					/>
 				</Tooltip>
+				<Tooltip placement="top" title="下载导入模板">
+					<Button
+						icon={<DownloadOutlined />}
+						onClick={handleClickDownloadTemplate}
+					/>
+				</Tooltip>
 				<Tooltip placement="top" title="从文件导入">
 					<Button
 						icon={<ImportOutlined />}
 						onClick={handleClickupload}
 					/>
 				</Tooltip>
+				{/* <Tooltip placement="top" title="导出到文件">
+					<Button
+						icon={<ExportOutlined />}
+						onClick={handleClickExport}
+					/>
+				</Tooltip> */}
 				<Tooltip placement="top" title="生成班表">
 					<Button
 						icon={<MyIcon type="icon-paibanguanli" />}

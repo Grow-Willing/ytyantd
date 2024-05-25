@@ -29,11 +29,11 @@ function App() {
 					}}
 					value={`共 ${workShedule.day.input_num_days} 天`}
 				/>
-				<Tooltip placement="top" title="生成班表">
+				{/* <Tooltip placement="top" title="生成班表">
 					<Button 
 						icon={<MyIcon type="icon-paibanguanli" />}
 					/>
-				</Tooltip>
+				</Tooltip> */}
 			</Space.Compact>
 		</>
 	);
